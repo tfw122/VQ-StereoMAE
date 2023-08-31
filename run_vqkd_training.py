@@ -172,7 +172,7 @@ def main(args):
     # random.seed(seed)
 
     cudnn.benchmark = True
-    model = torch.nn.parallel.DistributedDataParallel(modeling_vqkd.VQKD(args), device_ids=[args.gpu], find_unused_parameters=True) 
+    model = torch.nn.parallel.DistributedDataParallel() 
 
     model = get_model(args)
     model = utils.get_model_error_fix(model)
