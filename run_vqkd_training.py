@@ -261,14 +261,10 @@ def main(args):
     loss_scaler = NativeScaler()
 
     #if args.distributed:
-    if True:
-        #dist.init_process_group(backend='nccl', init_method='env://')    
-        
-        #dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
-        #                                 world_size=args.world_size, rank=args.rank)
+    #if True:
 
         #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-        model_without_ddp = model.module
+        #model_without_ddp = model.module
 
     print("Use step level LR & WD scheduler!")
     lr_schedule_values = utils.cosine_scheduler(
