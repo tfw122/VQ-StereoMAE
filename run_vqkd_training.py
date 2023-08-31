@@ -172,9 +172,10 @@ def main(args):
     # random.seed(seed)
 
     cudnn.benchmark = True
-    model = torch.nn.parallel.DistributedDataParallel() 
+   
 
     model = get_model(args)
+    model = torch.nn.parallel.DistributedDataParallel(model) 
     model = utils.get_model_error_fix(model)
 
     # get dataset
