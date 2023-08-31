@@ -178,10 +178,11 @@ def bool_flag(s):
         raise argparse.ArgumentTypeError("invalid value for a boolean flag")
 
 def get_model(model):
-    if isinstance(model, torch.nn.DataParallel) \
-      or isinstance(model, torch.nn.parallel.DistributedDataParallel):
+    if isinstance(model, torch.nn.DataParallel) or isinstance(model, torch.nn.parallel.DistributedDataParallel):
+        print("***************HERE*******************")
         return model.module
     else:
+        print("***************THIS BIT*****************")
         return model
             
 class SmoothedValue(object):
