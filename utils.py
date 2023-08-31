@@ -16,7 +16,7 @@ from collections import defaultdict, deque
 from omegaconf import OmegaConf
 import glob
 import time 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from timm.utils import get_state_dict
 import argparse 
 import torch
