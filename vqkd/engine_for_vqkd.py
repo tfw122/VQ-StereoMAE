@@ -16,6 +16,7 @@ import sys
 from typing import Iterable
 import torch
 import utils
+import torch.distributed as dist
 
 def train_one_epoch(model: torch.nn.Module, 
                             data_loader: Iterable, 
@@ -187,7 +188,7 @@ def calculate_codebook_usage(data_loader, model, device, log_writer=None, epoch=
         outputs = utils.get_model_error_fix(model).get_tokens(images)['token'].view(-1)
         
         outputs_gather_list = [torch.zeros_like(outputs) for _ in range(utils.get_world_size())]
-        torch.distributed.all_gather(outputs_gather_list, outputs)
+        dist.all_gather(outputs_gather_list, outputs)
         all_tokens = torch.cat(outputs_gather_list, dim=0).view(-1) # [B * N * Ngpu, ]
         
         codebook_cnt += torch.bincount(all_tokens, minlength=codebook_num)

@@ -12,6 +12,7 @@ import numpy as np
 import torch
 import warnings
 import dnnlib
+import torch.distributed as dist
 
 #----------------------------------------------------------------------------
 # Cached construction of constant tensors. Avoids CPU=>GPU copy when the
@@ -183,7 +184,7 @@ def check_ddp_consistency(module, ignore_regex=None):
             continue
         tensor = tensor.detach()
         other = tensor.clone()
-        torch.distributed.broadcast(tensor=other, src=0)
+        dist.broadcast(tensor=other, src=0)
         assert (nan_to_num(tensor) == nan_to_num(other)).all(), fullname
 
 #----------------------------------------------------------------------------

@@ -15,6 +15,7 @@ import re
 import numpy as np
 import torch
 import dnnlib
+import torch.distributed as dist
 
 from . import misc
 
@@ -253,7 +254,7 @@ def _sync(names):
 
     # Sum deltas across ranks.
     if _sync_device is not None:
-        torch.distributed.all_reduce(deltas)
+        dist.all_reduce(deltas)
 
     # Update cumulative values.
     deltas = deltas.cpu()
