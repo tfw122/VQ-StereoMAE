@@ -16,6 +16,7 @@ import datetime
 import numpy as np
 import time
 import torch
+print(torch.cuda.version)
 import torch.backends.cudnn as cudnn
 import json
 import os
