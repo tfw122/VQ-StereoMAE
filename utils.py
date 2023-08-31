@@ -37,8 +37,10 @@ def bool_flag(s):
 
 def get_model_error_fix(model):
     if isinstance(model, torch.nn.DataParallel) or isinstance(model, torch.nn.parallel.DistributedDataParallel):
+        print("***************HERE*****************")
         return model.module
     else:
+        print("***************this one*****************")
         return model
             
 class SmoothedValue(object):
