@@ -17,10 +17,10 @@ from timm.models.layers import trunc_normal_
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from timm.models.registry import register_model
 
-from modeling_finetune import VisionTransformer
-from norm_ema_quantizer import NormEMAVectorQuantizer
+from vqkd.modeling_finetune import VisionTransformer
+from vqkd.norm_ema_quantizer import NormEMAVectorQuantizer
 
-from vqkd_teacher import clip, get_dino_vit_base
+from vqkd.vqkd_teacher import clip, get_dino_vit_base
 
 class VQKD(nn.Module):
     def __init__(self,
