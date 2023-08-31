@@ -184,9 +184,7 @@ def main(args):
     else:
         dataset_val = build_vqkd_dataset(is_train=False, args=args)
     
-    print("***AT THIS BIT ***")
     if True:  # args.distributed:
-        print("Use distributed training!******************")
         num_tasks = utils.get_world_size()
         global_rank = utils.get_rank()
         sampler_rank = global_rank
@@ -205,13 +203,10 @@ def main(args):
                 dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
         else:
             sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    
     else:
-        print("Use non-distributed training!******************")
-        sampler_train = torch.utils.data.RandomSampler(dataset_train)
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+        pass
 
-    if global_rank == 0 and args.log_dir is not None:
+    if global_rank == 0 and args.log_dir is not None: 
         os.makedirs(args.log_dir, exist_ok=True)
         log_writer = utils.TensorboardLogger(log_dir=args.log_dir)
     else:
@@ -262,8 +257,11 @@ def main(args):
 
     optimizer = create_optimizer(args, model_without_ddp)
     loss_scaler = NativeScaler()
+    
+    print("WE'RE JUST BEFORE THIS POINT NOW")
 
     if args.distributed:
+        print("WE'RE AT THIS POINT NOW")
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
 
