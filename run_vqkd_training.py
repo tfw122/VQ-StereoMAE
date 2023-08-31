@@ -175,7 +175,6 @@ def main(args):
    
 
     model = get_model(args)
-    model = torch.nn.parallel.DistributedDataParallel(model) 
     model = utils.get_model_error_fix(model)
 
     # get dataset
@@ -184,8 +183,10 @@ def main(args):
         dataset_val = None
     else:
         dataset_val = build_vqkd_dataset(is_train=False, args=args)
-
+    
+    print("***AT THIS BIT ***")
     if True:  # args.distributed:
+        print("Use distributed training!******************")
         num_tasks = utils.get_world_size()
         global_rank = utils.get_rank()
         sampler_rank = global_rank
@@ -204,7 +205,9 @@ def main(args):
                 dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
         else:
             sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    
     else:
+        print("Use non-distributed training!******************")
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
 
