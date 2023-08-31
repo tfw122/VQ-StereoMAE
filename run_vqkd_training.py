@@ -21,7 +21,8 @@ import json
 import os
 from pathlib import Path
 from timm.models import create_model
-from timm.optim.optim_factory import create_optimizer_v2 as create_optimizer
+from timm.optim import create_optimizer as create_optimizer
+#from timm.optim.optim_factory import create_optimizer
 
 from vqkd.datasets import build_vqkd_dataset
 
