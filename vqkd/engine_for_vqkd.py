@@ -111,6 +111,7 @@ def train_one_epoch(model: torch.nn.Module,
     print("Averaged stats:", metric_logger)
     
     # stat the codebook usage information
+    base_model = model.module if hasattr(model, 'module') else model
     if hasattr(model.module, 'quantize'):
         try:
             codebook_cluster_size = model.module.quantize._codebook.cluster_size
@@ -132,6 +133,7 @@ def evaluate(data_loader, model, device, log_writer=None, epoch=None, args=None)
     # switch to evaluation mode
     model.eval()
 
+    base_model = model.module if hasattr(model, 'module') else model
     if hasattr(model.module, 'quantize'):
         try:
             model.module.quantize.reset_cluster_size(device)
@@ -154,6 +156,7 @@ def evaluate(data_loader, model, device, log_writer=None, epoch=None, args=None)
     print("Averaged stats:", metric_logger)
 
     # stat the codebook usage information
+    base_model = model.module if hasattr(model, 'module') else model
     if hasattr(model, 'module') and hasattr(model.module, 'quantize'):
         try:
             codebook_cluster_size = model.module.quantize._codebook.cluster_size
