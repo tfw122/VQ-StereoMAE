@@ -37,6 +37,7 @@ def train_one_epoch(model: torch.nn.Module,
     header = 'Epoch: [{}]'.format(epoch)
     print_freq = 10
         
+    base_model = model.module if hasattr(model, 'module') else model
     if hasattr(model.module, 'quantize'):
         try:
             model.module.quantize.reset_cluster_size(device)
