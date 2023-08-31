@@ -18,11 +18,11 @@ from torchvision import datasets, transforms
 
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
-from transforms import RandomResizedCropAndInterpolationWithTwoPic, _pil_interp
+from vqkd.transforms import RandomResizedCropAndInterpolationWithTwoPic, _pil_interp
 from timm.data import create_transform, ImageDataset 
 
-from masking_generator import MaskingGenerator
-from dataset_folder import ImageFolder
+from vqkd.masking_generator import MaskingGenerator
+from vqkd.dataset_folder import ImageFolder
 
 
 class DataAugmentationForBEiT(object):
