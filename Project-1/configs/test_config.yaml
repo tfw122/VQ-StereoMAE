@@ -1,0 +1,140 @@
+config_version: 1.0
+user_config: {}
+training:
+  trainer: lightning
+  seed: -1
+  experiment_name: run
+  max_updates: null
+  max_epochs: 100
+  should_not_log: false
+  log_interval: 100
+  logger_level: info
+  log_format: simple
+  log_detailed_config: false
+  tensorboard: false
+  wandb:
+    enabled: false
+    entity: null
+    project: trl
+    name: ${training.experiment_name}
+    log_checkpoint: false
+  batch_size: 32
+  batch_size_per_device: null
+  update_frequency: 1
+  num_workers: 12
+  dataset_size_proportional_sampling: true
+  pin_memory: false
+  persistent_workers: true
+  checkpoint_interval: 1000
+  evaluation_interval: 1000
+  clip_gradients: false
+  clip_norm_mode: all
+  early_stop:
+    enabled: false
+    patience: 4000
+    criteria: total_loss
+    minimize: true
+  lr_scheduler: false
+  lr_steps: []
+  lr_ratio: 0.1
+  use_warmup: false
+  warmup_factor: 0.2
+  warmup_iterations: 1000
+  device: cuda
+  gpus: 1
+  local_rank: null
+  verbose_dump: false
+  find_unused_parameters: false
+  evaluate_metrics: false
+  detect_anomaly: false
+  mixed_precision: false
+  callbacks: []
+  exit_on_nan_losses: true
+trainer:
+  type: lightning
+  params:
+    gpus: 1
+    num_nodes: 1
+    precision: 32
+    deterministic: false
+    benchmark: false
+    max_steps: 22000
+    max_epochs: null
+    gradient_clip_val: 1.0
+    num_sanity_val_steps: 0
+    checkpoint_callback: true
+    accumulate_grad_batches: 1
+    val_check_interval: 1000
+    log_every_n_steps: 100
+    logger: false
+    limit_val_batches: 1.0
+    progress_bar_refresh_rate: 10
+    resume_from_checkpoint: null
+evaluation:
+  metrics: []
+  use_cpu: false
+  predict: false
+  predict_file_format: json
+  reporter:
+    type: file
+    params: {}
+model_config:
+  name: toy_classifier
+  loss: cross_entropy
+  image_encoder:
+    name: resnet18
+    pretrained: true
+  layers:
+    input_dim: 3
+  classifier:
+    type: mlp
+    params:
+      in_dim: 512
+      logits: 10
+dataset_config:
+  dataset_name: cifar
+  dataset_builder: toy_vision
+  preprocess:
+    type: vision
+    transforms:
+      transforms_train:
+      - Resize
+      - ToTensor
+      transforms_test:
+      - Resize
+      - ToTensor
+    params:
+      Resize:
+      - 32
+      - 32
+      ToTensor: null
+model: null
+run_type: train
+optimizer:
+  type: Adam
+  params: null
+  allow_unused_parameters: false
+  enable_state_sharding: false
+scheduler:
+  type: ExponentialLR
+  params:
+    gamma: 0.9
+checkpoint:
+  resume: false
+  resume_file: null
+  resume_best: false
+  resume_pretrained: false
+  resume_zoo: null
+  zoo_config_override: false
+  pretrained_state_mapping: {}
+  max_to_keep: -1
+  save_git_details: true
+  reset:
+    all: false
+    optimizer: false
+    counts: false
+    fp16_scaler: false
+multitasking:
+  enabled: true
+  type: size_proportional
+  params: {}

@@ -1,0 +1,21 @@
+user_config:
+  # SAVING CHECKPOINTS
+  save_locally: True
+  save_root_dir: "../data"
+
+  # ------------------- RUN ARGS -------------------
+  # Name of the experiment, will be used while saving checkpoints
+  # and generating reports
+  experiment_name:  mae_stereo_mim_perceptual #stereo_downstream_perceptual_all
+  task_type: downstream4
+
+  # # ------------------- S3 ARGS -------------------
+  data_dir: "../data"
+  username_prefix: tiawarner
+  # Outputs to s3://s3bucket_name/s3key_prefix/{part_name}_{task_type}/{experiment_name}/{timestamp}/
+
+  # set AWS env variables:
+  aws_key_region: us-east
+  data_bucket_region: eu-central-1
+  image_bucket_region: eu-central-1
+  image_bucket_name: tractable-images-tmnf

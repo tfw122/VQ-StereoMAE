@@ -1,0 +1,86 @@
+dataset_config:
+  dataset_name: stereo_mim
+  dataset_builder: stereo_vision_mim
+  root_dir: ../data
+
+  dataset_mode: 
+    image_type: mixed # 'mixed', 'real', 'synthetic' or 'individual'
+    individual_name: kitti # this arg is only used if image_type arg = 'individual'
+    # 'mixed' = train mim with mix of real and synthetic scenes
+    # 'synthetic' = if training with synthetic only, 
+    # 'real' = training with real only
+    # 'individual' = training on one individual dataset i.e. either cityscapes only, kitti only etc ....
+
+    # the following are the datasets to be trained on; comment out what you don't need
+    dataset_classes:
+      - cityscapes_mim
+      - kitti_custom_mim
+      - falling_things_single_mim
+      - falling_things_mixed_mim
+      - sceneflow_cleanpass_mim
+      - sceneflow_finalpass_mim
+
+  db_split_ratio: 0.997 # number of samples to use for training Kitti std.
+
+  preprocess:
+    name: vision
+    vision_transforms:
+      transforms_train:
+        - Resize
+        #- RandomAffine
+        #- RandomPerspective
+        - RandomHorizontalFlip
+        #- Solarize # Causes weird mismatch in stereo images from simulated environments
+        #- GaussianBlur
+        - ToTensor
+        - RandomAugment
+        #- Normalise
+      transforms_test:
+        - Resize
+        - ToTensor
+       # - Normalise
+      # params must have the same name as 
+      # transforms list above to ensure
+      # parameters are loaded to the right 
+      # transforms class
+      params:
+        Resize: 
+          size: [224, 448] # height, width RAFT STEREO = 360 x 720 (Aspect ratio = 2) 224 x 448
+
+        #RandomResizedCrop: 
+        #  size: [224, 448] # height, width RAFT STEREO = 360 x 720 (Aspect ratio = 2)
+        #  scale: [0.2, 1.0]
+        #  interpolation: 3
+
+        RandomRotation:
+          degrees: [20,180]
+
+        RandomAffine:
+          degrees: [20,180]
+        
+        RandomPerspective: null
+
+        RandomHorizontalFlip: null
+
+        Solarize:
+          version: torch
+          threshold: 192.0
+          do_augmentation: True
+
+        GaussianBlur:
+          do_augmentation: True
+          sigma: [.1, 2.]
+        
+        ToTensor: null
+
+        RandomAugment:
+          augment_parameters:
+            - 0.8
+            - 1.2
+            - 0.5
+            - 2.0
+            - 0.8
+            - 1.2
+          do_augmentation: True
+        #Normalise: 
+        #  norm_type: imagenet

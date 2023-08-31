@@ -1,0 +1,104 @@
+# Configuration version is useful in migrating older configs to new ones
+config_version: 1.0
+
+# Configuration for the user, default configuration files for user-specific
+# details i.e. AWS credentials, s3 bucket for saving and storing data
+user_config: {}
+
+# Configuration for training
+training:
+    # Name of the trainer class used to define the training/evalution loop
+    # `trl` for default trainer, `lightning` for pytorch lightning trainer
+    # pytorch lightning trainer's params is at `trainer.params`
+    trainer: lightning
+    # Seed to be used for training. -1 means random seed between 1 and 100000.
+    # Either pass fixed through your config or command line arguments
+    # Pass null to the seed if you don't want it seeded anyhow and
+    # want to leave it to default
+    seed: -1
+
+    # Size of the batch globally. If distributed or data_parallel
+    # is used, this will be divided equally among GPUs
+    batch_size: 8 # 16 for mim, 8 for stereo
+    # Number of workers to be used in dataloaders
+    num_workers: 16
+    # Use in multi-tasking, when you want to sample tasks proportional to their sizes
+    dataset_size_proportional_sampling: true
+    # Whether to pin memory in dataloader
+    pin_memory: false
+    # Whether to use persistent workers in dataloader
+    # (only effective for PyTorch 1.8 or higher which supports persistent_workers)
+    persistent_workers: true
+
+    # Device on which the model will be trained. Set 'cpu' to train/infer on CPU
+    test_device: cuda:2
+
+    # Local rank of the GPU device
+    local_rank: null
+    # If verbose dump is active, MMF will dump dataset, model specific
+    # information which can be useful in debugging
+    verbose_dump: false
+
+    # Turn on if you want to ignore unused parameters in case of DDP
+    find_unused_parameters: False
+
+    # Users can define their own callback functions in the trainer, e.g. adjust
+    # learning rate, plot data in tensorboard, etc.
+    # The format should look like:
+    # callbacks:
+    #   - type: my_callback
+    #     params:
+    #     params:
+    #       foo: bar
+    callbacks:
+        - type: CheckpointEveryNSteps
+          params:
+            save_step_frequency: 2789
+            prefix: "N-Step-Checkpoint" 
+            use_modelcheckpoint_filename: False
+
+trainer:
+    # Name of the trainer class used to define the training/evalution loop
+    # `trl` or `lightning` to specify the trainer to be used
+    # `trl` for trl trainer,
+    # for trl trainer params, please see training params in the `training` config (listed above)
+    # `lightning` for Pytorch Lightning trainer
+    # for lightning trainer params, please see lightning doc for details: ie.,
+    # https://pytorch-lightning.readthedocs.io/en/latest/trainer.html#trainer-class-api
+    type: lightning
+    params:
+        #gpu: 0 # [id1, id2 ...] for selecting specific GPUs, -1 for all gpus
+        tpu_cores: null
+        #accelerator: gpu
+        num_nodes: 1
+        #devices: 0
+        precision: 16 # for Downstream = 16 for MIM = 32.
+        deterministic: false
+        benchmark: false
+        max_steps: -1
+        max_epochs: -1
+        gradient_clip_val: 0.0
+        num_sanity_val_steps: 0
+        #checkpoint_callback: true
+        accumulate_grad_batches: 1
+        #check_val_every_n_epoch: 1 # 2cd ~/Co000
+        val_check_interval: 1992 #6500 #6000 #12000
+        log_every_n_steps: 300 # 300
+        enable_checkpointing: True
+        strategy: ddp
+        #replace_sampler_ddp: True
+        #limit_val_batches: 0.0 # >>> disable validation
+        # set to 0 if you want progress bar to be turned off
+        enable_progress_bar: True #100
+        gradient_clip_algorithm: norm
+        gradient_clip_val: 0.0 # if 0; disables gradient clipping, set 1.0 for RAFT downstream training
+
+
+# Configuration for models, default configuration files for various models
+model_config: {}
+
+# Configuration for datasets. Separate configuration
+# for different datasets check dataset folder for the relevant config
+# which can be mixed and matched to train multiple datasets together
+# An example for mixing all vqa datasets is present under vqa folder
+dataset_config: {}

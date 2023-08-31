@@ -1,0 +1,43 @@
+model_config:
+  name: stereo_vit_downstream # 'vit_downstraeam' is for masked_image model only, 'vision_language_vit_downstream' is for masked vision and language model backbone
+  
+  # base encoder: embed_dim=768, depth=12, num_heads=12
+  # large encoder: embed_dim=1024, depth=24, num_heads=16
+
+  # ----- image encoder architecture -----
+  image_encoder:
+    patch_size: [16, 32]  # can't use a standard square patch on a non-square image
+    in_channels: 3 
+    embed_dim: 768 # if using base vit model, embed_dim = 768; if using large, embed_dim=1024
+    depth: 12 # num layers of vit, for base: 12, for large: 24
+    mlp_ratio: 4
+    num_heads: 12  # for base, num_heads=12; for large, num_heads=16
+    dropout_rate: 0.1
+
+  # downstream RAFT Decoder args
+  # ----- transformer params -----
+  raft_decoder:
+    hidden_dims: [128, 128, 128] #[128]*3
+    n_gru_layers: 3 # number of hidden GRU levels
+    n_downsample: 2 # resolution of the disparity field (1/2^K)
+    corr_levels: 4 # number of levels in the correlation pyramid
+    corr_radius: 4 # width of the correlation pyramid
+    corr_implementation: reg # choices=["reg", "alt", "reg_cuda", "alt_cuda"]
+    valid_iters: 32 # number of flow-field updates during forward pass
+    slow_fast_gru: False
+    train_iters: 22 # number of updates to the disparity field in each forward pass
+    valid_iters: 32 # number of flow-field updates during validation forward pass
+
+  norm_layer_arg: partial
+
+  ckpt_monitor: val_loss
+
+  # load pretrained models;
+  load_pretrained_mae: ../data/tiawarner/downstream4/mae_stereo_mim_perceptual/230824-210638/train_outputs/best-model-epoch=018-val_loss=0.52.ckpt
+  load_imagenet_supervised: null
+  load_pretrained_raft_decoder: null #/data/tiawarner/pretrained_raft/raftstereo-sceneflow.pth
+
+  frequency_to_visualise: 2000
+  # Downstream training ckpt:
+  load_ckpt_model_only: null #../data/tiawarner/pretrained_downstream/sample-epoch=054-val_loss=272.88.ckpt
+  load_checkpoint: ../data/tiawarner/downstream4/mae_stereo_mim_perceptual/230828-191418/train_outputs/N-Step-Checkpoint_004_30679.ckpt

@@ -1,0 +1,110 @@
+dataset_config:
+  dataset_name: stereo_downstream
+  dataset_builder: stereo_vision_downstream
+  root_dir: ../data
+  
+  # for some reason, RAFT multiplies some of the dataset size;
+  # https://github.com/princeton-vl/RAFT-Stereo/blob/main/core/stereo_datasets.py#L301
+  use_multiplier: 
+    multiply: False
+    db_to_multiply:
+      - sceneflow_clean_downstream
+      - sceneflow_final_downstream
+      - sintel_stereo_downstream
+      - falling_things_single_downstream
+      - falling_things_mixed_downstream
+    
+    multiplier_dict:
+      sintel_stereo_downstream: 140
+      falling_things_single_downstream: 5
+      falling_things_mixed_downstream: 5
+      sceneflow_clean_downstream: 4
+      sceneflow_final_downstream: 4
+
+  # Datasets to train on (concatenated by the builder)
+  dataset_classes:
+    - kitti_downstream
+    - falling_things_single_downstream
+    - falling_things_mixed_downstream
+    - sceneflow_clean_downstream
+    - sceneflow_final_downstream
+    - sintel_stereo_downstream
+    - middlebury_custom_downstream
+    - middlebury_downstream
+    - eth3d_downstream
+
+  db_split_ratio: 0.99 # number of samples to use for training
+
+  raft_db_args:
+    augmentor_params:
+      img_gamma: null
+      saturation_range: null
+      do_flip: False
+      spatial_scale: [0, 0]
+      noyjitter: True
+      image_size: [224,448]
+
+  preprocess:
+    name: vision
+    vision_transforms:
+      transforms_train:
+        - Resize
+        #- RandomAffine
+        #- RandomPerspective
+        - RandomHorizontalFlip
+        #- Solarize # Causes weird mismatch in stereo images from simulated environments
+        - GaussianBlur
+        - ToTensor
+        - RandomAugment
+        #- Normalise
+      transforms_test:
+        - Resize
+        - ToTensor
+       # - Normalise
+      # params must have the same name as 
+      # transforms list above to ensure
+      # parameters are loaded to the right 
+      # transforms class
+      params:
+        Resize: 
+          size: [224, 448] # height, width RAFT STEREO = 360 x 720 (Aspect ratio = 2) 224 x 448
+
+        # RAFT AUG PARAMS:
+        spatial_scale: [-0.2, 0.4] # re-scale the images randomly
+        noyjitter: False # don\'t simulate imperfect rectification
+        do_flip: False # (MAKES RESULTS WORSE) choices = [False, 'h', 'v'] flip the images horizontally or vertically
+        saturation_range: [0, 1.4] # color saturation
+        img_gamma: null # gamma range
+
+        RandomRotation:
+          degrees: [20,180]
+
+        RandomAffine:
+          degrees: [20,180]
+        
+        RandomPerspective: null
+
+        RandomHorizontalFlip: null
+
+        Solarize:
+          version: torch
+          threshold: 192.0
+          do_augmentation: True
+
+        GaussianBlur:
+          do_augmentation: True
+          sigma: [.1, 2.]
+        
+        ToTensor: null
+
+        RandomAugment:
+          augment_parameters:
+            - 0.8
+            - 1.2
+            - 0.5
+            - 2.0
+            - 0.8
+            - 1.2
+          do_augmentation: True
+        #Normalise: 
+        #  norm_type: imagenet
