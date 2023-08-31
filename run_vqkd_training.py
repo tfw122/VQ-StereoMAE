@@ -25,10 +25,10 @@ from timm.optim.optim_factory import create_optimizer
 
 from datasets import build_vqkd_dataset
 
-from engine_for_vqkd import evaluate, train_one_epoch, calculate_codebook_usage
+from vqkd.engine_for_vqkd import evaluate, train_one_epoch, calculate_codebook_usage
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
-import modeling_vqkd as modeling_vqkd
+import vqkd.modeling_vqkd as modeling_vqkd
 
 def get_args():
     parser = argparse.ArgumentParser('BEiT pre-training script', add_help=False)
