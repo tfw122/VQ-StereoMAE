@@ -115,4 +115,4 @@ if __name__ == '__main__':
         if mask.sum() != 118:
             pdb.set_trace()
             print(mask)
-            print(mask.sum())
+            mask.sum())

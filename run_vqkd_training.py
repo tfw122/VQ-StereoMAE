@@ -53,6 +53,7 @@ def get_args():
                         help='Image process type (default, dall-e)')
     parser.add_argument('--input_size', default=224, type=int, help='images input size for backbone')
 
+    parser.add_argument('--gpu', type=int, default=0, help='GPU ID to use.')
     # regress feature
     parser.add_argument('--teacher_model_type', default='clip', type=str, help='teacher_model_type during training')
     parser.add_argument('--teacher_input_size', default=224, type=int, help='teacher_input_size for clip-large p14')
@@ -257,12 +258,10 @@ def main(args):
 
     optimizer = create_optimizer(args, model_without_ddp)
     loss_scaler = NativeScaler()
-    
-    print("WE'RE JUST BEFORE THIS POINT NOW")
 
     #if args.distributed:
     if True:
-        print("WE'RE AT THIS POINT NOW")
+
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
 
