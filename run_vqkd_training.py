@@ -260,7 +260,8 @@ def main(args):
     
     print("WE'RE JUST BEFORE THIS POINT NOW")
 
-    if args.distributed:
+    #if args.distributed:
+    if True:
         print("WE'RE AT THIS POINT NOW")
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
