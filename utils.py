@@ -21,8 +21,6 @@ from timm.utils import get_state_dict
 import argparse 
 import torch
 
-
-
 logger = logging.getLogger(__name__)
 def bool_flag(s):
     """
@@ -37,7 +35,7 @@ def bool_flag(s):
     else:
         raise argparse.ArgumentTypeError("invalid value for a boolean flag")
 
-def get_model(model):
+def get_model_error_fix(model):
     if isinstance(model, torch.nn.DataParallel) or isinstance(model, torch.nn.parallel.DistributedDataParallel):
         return model.module
     else:
