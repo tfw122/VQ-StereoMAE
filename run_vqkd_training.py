@@ -23,7 +23,7 @@ from pathlib import Path
 from timm.models import create_model
 from timm.optim.optim_factory import create_optimizer
 
-from datasets import build_vqkd_dataset
+from vqkd.datasets import build_vqkd_dataset
 
 from vqkd.engine_for_vqkd import evaluate, train_one_epoch, calculate_codebook_usage
 from utils import NativeScalerWithGradNormCount as NativeScaler
