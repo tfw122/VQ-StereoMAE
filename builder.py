@@ -466,7 +466,7 @@ def get_optimizer_parameters(model, config):
         parameters = model.get_optimizer_parameters(config)
 
     is_parallel = isinstance(model, nn.DataParallel) or isinstance(
-        model, nn.parallel.DistributedDataParallel
+        model = nn.parallel.DistributedDataParallel
     )
 
     if is_parallel and hasattr(model.module, "get_optimizer_parameters"):
