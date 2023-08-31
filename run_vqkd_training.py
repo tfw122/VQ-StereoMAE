@@ -92,7 +92,7 @@ def get_args():
                         help='min_crop_scale (default: 0.08)')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
+    parser.add_argument('--data_path', default='../data/imagenet', type=str,
                         help='dataset path')
     parser.add_argument('--eval_data_path', default='', type=str, help='dataset path')
     parser.add_argument('--data_set', default='image_folder', type=str, help='dataset path')
