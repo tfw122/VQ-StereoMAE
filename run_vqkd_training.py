@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 from timm.models import create_model
 from timm.optim import create_optimizer as create_optimizer
+import torch.distributed as dist
 #from timm.optim.optim_factory import create_optimizer
 
 from vqkd.datasets import build_vqkd_dataset
@@ -261,6 +262,8 @@ def main(args):
 
     #if args.distributed:
     if True:
+        dist.init_process_group(backend='nccl', init_method='env://')
+
 
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
