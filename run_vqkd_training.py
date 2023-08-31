@@ -267,7 +267,7 @@ def main(args):
         #dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
         #                                 world_size=args.world_size, rank=args.rank)
 
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+        #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
 
     print("Use step level LR & WD scheduler!")
