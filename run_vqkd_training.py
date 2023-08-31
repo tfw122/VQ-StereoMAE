@@ -174,6 +174,7 @@ def main(args):
     cudnn.benchmark = True
 
     model = get_model(args)
+    model = utils.get_model_error_fix(model)
 
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
