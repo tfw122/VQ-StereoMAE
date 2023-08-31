@@ -54,7 +54,7 @@ def get_args():
                         help='Image process type (default, dall-e)')
     parser.add_argument('--input_size', default=224, type=int, help='images input size for backbone')
 
-    parser.add_argument('--gpu', type=int, default=0, help='GPU ID to use.')
+    parser.add_argument('--gpu', type=int, default=1, help='GPU ID to use.')
     # regress feature
     parser.add_argument('--teacher_model_type', default='clip', type=str, help='teacher_model_type during training')
     parser.add_argument('--teacher_input_size', default=224, type=int, help='teacher_input_size for clip-large p14')
