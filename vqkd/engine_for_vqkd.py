@@ -60,7 +60,7 @@ def train_one_epoch(model: torch.nn.Module,
             loss, log_loss = model(images)
 
         #loss_value = loss.item()
-        loss_value = loss.sum().item()  # or loss.mean().item() depending on your requirement
+        loss_value = loss.sum()  # or loss.mean().item() depending on your requirement
 
 
         if not math.isfinite(loss_value):
