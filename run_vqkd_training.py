@@ -226,7 +226,7 @@ def main(args):
         if isinstance(model, torch.nn.DataParallel):
             print(type(model))
             print(type(model.module))
-            model_part = eval(f"model.module{part}")
+            model_part = eval(f"model.module.{part}")
         else:
             model_part = eval(f"model.{part}")
 
