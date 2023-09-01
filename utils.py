@@ -576,7 +576,7 @@ def save_model(args, epoch, model, model_without_ddp, optimizer, loss_scaler, mo
         torch.save(to_save, checkpoint_path)
          
 
-def auto_load_model(args, model, model_without_ddp, optimizer, loss_scaler, model_ema=None, optimizer_disc=None):
+def auto_load_model(args, model, optimizer, loss_scaler, model_ema=None, optimizer_disc=None):
     output_dir = Path(args.output_dir)
     
     if args.auto_resume and len(args.resume) == 0:

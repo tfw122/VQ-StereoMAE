@@ -183,6 +183,7 @@ def main(args):
     model = get_model(args).to(device)
 
     model = torch.nn.DataParallel(model)
+    print(type(model.module))
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
     if args.disable_eval:
