@@ -215,6 +215,7 @@ def main(args):
 
     model.to(device)
     model_without_ddp = model
+    num_training_steps_per_epoch = len(dataset_train) // args.batch_size 
     if not args.eval:
         print("Model = %s" % str(model_without_ddp))
     for part in ['encoder', 'decoder']:
