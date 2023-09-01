@@ -218,7 +218,12 @@ def main(args):
     if not args.eval:
         print("Model = %s" % str(model_without_ddp))
     for part in ['encoder', 'decoder']:
-        model_part = eval(f"model.{part}")
+
+        if isinstance(model, torch.nn.DataParallel):
+            model_part = eval(f"model.module.{part}")
+        else:
+            model_part = eval(f"model.{part}")
+
         n_learnable_parameters = sum(p.numel() for p in model_part.parameters() if p.requires_grad)
         n_fix_parameters = sum(p.numel() for p in model_part.parameters() if not p.requires_grad)
         print(f'number of learnable params in model.{part}: {n_learnable_parameters / 1e6} M')
