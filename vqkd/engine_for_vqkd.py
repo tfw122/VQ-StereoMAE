@@ -16,7 +16,6 @@ import sys
 from typing import Iterable
 import torch
 import utils
-import torch.distributed as dist
 
 def train_one_epoch(model: torch.nn.Module, 
                             data_loader: Iterable, 

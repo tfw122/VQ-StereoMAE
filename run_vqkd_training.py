@@ -182,7 +182,7 @@ def main(args):
 
     model = get_model(args).to(device)
 
-
+    model = torch.nn.DataParallel(model)
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
     if args.disable_eval:
@@ -248,7 +248,7 @@ def main(args):
     print("Number of training steps = %d" % num_training_steps_per_epoch)
     print("Number of training examples per epoch = %d" % (total_batch_size * num_training_steps_per_epoch))
 
-    optimizer = create_optimizer(args, model_without_ddp)
+    optimizer = create_optimizer(args, model)
     loss_scaler = NativeScaler()
 
     #if args.distributed:
@@ -260,20 +260,20 @@ def main(args):
 
     print("Use step level LR & WD scheduler!")
     lr_schedule_values = utils.cosine_scheduler(
-        args.lr, args.min_lr, args.epochs, num_training_steps_per_epoch,
+        args.lr, args.min_lr, args.epochs, len(data_loader_train),
         warmup_epochs=args.warmup_epochs, warmup_steps=args.warmup_steps,
     )
 
-    utils.auto_load_model(
-        args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
+    utils.auto_load_model(args, model, optimizer, loss_scaler)
+        
             
     if args.eval:
-        test_stats = evaluate(data_loader_val, model, device, log_writer, 0, args=args)
-        exit(0)
+        evaluate(data_loader_val, model, device, None, 0, args)
+        return
         
     if args.calculate_codebook_usage:
-        test_stats = calculate_codebook_usage(data_loader_val, model, device, log_writer, 0, args=args)
-        exit(0)
+        calculate_codebook_usage(data_loader_val, model, device, None, 0, args)
+        return
         
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
