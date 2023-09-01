@@ -225,7 +225,9 @@ def main(args):
     for part in ['encoder', 'decoder']:
 
         if isinstance(model, torch.nn.DataParallel):
-            model_part = eval(f"model.{part}")
+            print(type(model))
+            print(type(model.module))
+            model_part = eval(f"model.module{part}")
         else:
             model_part = eval(f"model.{part}")
 
