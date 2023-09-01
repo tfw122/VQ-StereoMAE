@@ -369,6 +369,8 @@ def _get_world_size_env():
 
 
 def init_distributed_mode(args):
+    os.environ['MASTER_ADDR'] = '127.0.0.1'
+    os.environ['MASTER_PORT'] = '29500'
     args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
     os.environ['LOCAL_RANK'] = str(args.gpu)
     os.environ['RANK'] = str(args.rank)
@@ -380,13 +382,13 @@ def init_distributed_mode(args):
         args.gpu = _get_local_rank_env()
 
         # ["RANK", "WORLD_SIZE", "MASTER_ADDR", "MASTER_PORT", "LOCAL_RANK"]
-    #elif 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
-    #    args.rank = int(os.environ["RANK"])
-    #    args.world_size = int(os.environ['WORLD_SIZE'])
-    #    args.gpu = int(os.environ['LOCAL_RANK'])
-    #elif 'SLURM_PROCID' in os.environ:
-    #    args.rank = int(os.environ['SLURM_PROCID'])
-    #    args.gpu = args.rank % torch.cuda.device_count()
+    elif 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
+        args.rank = int(os.environ["RANK"])
+        args.world_size = int(os.environ['WORLD_SIZE'])
+        args.gpu = int(os.environ['LOCAL_RANK'])
+    elif 'SLURM_PROCID' in os.environ:
+        args.rank = int(os.environ['SLURM_PROCID'])
+        args.gpu = args.rank % torch.cuda.device_count()
     #else:
     #    print('Using distributed mode')
     #    args.distributed =
