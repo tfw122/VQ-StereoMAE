@@ -369,7 +369,7 @@ def _get_world_size_env():
 
 
 def init_distributed_mode(args):
-    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_ADDR'] = '172.30.28.45'
     os.environ['MASTER_PORT'] = '12355'
     args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
     os.environ['LOCAL_RANK'] = str(args.gpu)
