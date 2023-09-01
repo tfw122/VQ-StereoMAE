@@ -193,6 +193,12 @@ def main(args):
 
     model = torch.nn.DataParallel(model)
     
+    if args.rank == 0 and args.log_dir is not None:
+        os.makedirs(args.log_dir, exist_ok=True)
+        log_writer = utils.TensorboardLogger(log_dir=args.log_dir)
+    else:
+        log_writer = None
+    
     sampler_train = torch.utils.data.RandomSampler(dataset_train)
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
