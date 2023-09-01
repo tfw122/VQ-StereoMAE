@@ -372,9 +372,9 @@ def _get_world_size_env():
 def init_distributed_mode(args):
     if args.dist_on_itp:
         rank = os.environ.get('RANK', 'Default Value')
-        os.environ['MASTER_ADDR'] = '172.30.28.45'
-        os.environ['MASTER_PORT'] = '50010'
-        args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
+        #os.environ['MASTER_ADDR'] = '172.30.28.45'
+        #os.environ['MASTER_PORT'] = '50010'
+        #args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
         os.environ['LOCAL_RANK'] = str(args.local_rank)
         os.environ['RANK'] = str(args.rank)
         os.environ['WORLD_SIZE'] = str(args.world_size)
