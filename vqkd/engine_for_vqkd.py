@@ -62,7 +62,7 @@ def train_one_epoch(model: torch.nn.Module,
         #loss_value = loss.item()
         print(loss)
         loss = loss.mean()
-        loss_value = loss
+        loss_value = loss.item()
         print(loss_value)  # or loss.mean().item() depending on your requirement
 
 

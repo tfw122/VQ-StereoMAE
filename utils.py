@@ -78,12 +78,12 @@ class SmoothedValue(object):
     @property
     def median(self):
         d = torch.tensor(list(self.deque))
-        return d.median().sum()
+        return d.median().item()
 
     @property
     def avg(self):
         d = torch.tensor(list(self.deque), dtype=torch.float32)
-        return d.mean().sum()
+        return d.mean().item()
 
     @property
     def global_avg(self):
@@ -206,7 +206,7 @@ class TensorboardLogger(object):
             if v is None:
                 continue
             if isinstance(v, torch.Tensor):
-                v = v.sum()
+                v = v.sum().item()
             assert isinstance(v, (float, int))
             self.writer.add_scalar(head + "/" + k, v, self.step if step is None else step)
     
