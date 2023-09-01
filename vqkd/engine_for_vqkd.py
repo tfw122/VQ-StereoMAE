@@ -41,12 +41,12 @@ def train_one_epoch(model: torch.nn.Module,
     #base_model = model.module if hasattr(model, 'module') else model
     #print(f"***********{type(model)}**************")
 
-    #if hasattr(model.module, 'quantize'):
-    #    try:
-    #        model.module.quantize.reset_cluster_size(device)
-    #        print("Reset the codebook statistic info in quantizer before each epoch")
-    #    except:
-    #        pass
+    if hasattr(model.module, 'quantize'):
+        try:
+            model.module.quantize.reset_cluster_size(device)
+            print("Reset the codebook statistic info in quantizer before each epoch")
+        except:
+            pass
         
     for step, (batch, _) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         # assign learning rate & weight decay for each step
