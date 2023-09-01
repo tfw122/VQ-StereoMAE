@@ -375,9 +375,14 @@ def init_distributed_mode(args):
     os.environ['LOCAL_RANK'] = str(args.gpu)
     os.environ['RANK'] = str(args.rank)
     os.environ['WORLD_SIZE'] = str(args.world_size)
-    
+    print('here')
+    print(args.dist_on_itp)
+    print(args.rank)
+    print(args.world_size)
+    print(args.gpu)
+    print('here')
+   
     if args.dist_on_itp:
-        print('here')
         args.rank = _get_rank_env()
         args.world_size = _get_world_size_env()  # int(os.environ['OMPI_COMM_WORLD_SIZE'])
         args.gpu = _get_local_rank_env()
