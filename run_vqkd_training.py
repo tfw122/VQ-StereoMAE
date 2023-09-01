@@ -213,7 +213,6 @@ def main(args):
     else:
         data_loader_val = None
 
-    model.to(device)
     model_without_ddp = model
     num_training_steps_per_epoch = len(dataset_train) // args.batch_size 
     if not args.eval:
@@ -324,6 +323,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    args = get_args
+    args = get_args()
     main(args)
 
