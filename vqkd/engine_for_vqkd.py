@@ -59,7 +59,9 @@ def train_one_epoch(model: torch.nn.Module,
         with torch.cuda.amp.autocast(enabled=True):
             loss, log_loss = model(images)
 
-        loss_value = loss.item()
+        #loss_value = loss.item()
+        loss_value = loss.sum().item()  # or loss.mean().item() depending on your requirement
+
 
         if not math.isfinite(loss_value):
             print("Loss is {}, stopping training".format(loss_value), force=True)
