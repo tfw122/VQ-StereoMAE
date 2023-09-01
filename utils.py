@@ -36,7 +36,7 @@ def bool_flag(s):
     else:
         raise argparse.ArgumentTypeError("invalid value for a boolean flag")
 
-def get_model_error_fix(model):
+def get_model(model):
     if isinstance(model, torch.nn.DataParallel) or isinstance(model, torch.nn.parallel.DistributedDataParallel):
 
         return model.module
@@ -351,57 +351,46 @@ def _get_rank_env():
     if "RANK" in os.environ:
         return int(os.environ["RANK"])
     else:
-        return int(os.environ['RANK'])
+        return int(os.environ['OMPI_COMM_WORLD_RANK'])
 
 
 def _get_local_rank_env():
     if "LOCAL_RANK" in os.environ:
         return int(os.environ["LOCAL_RANK"])
     else:
-        return int(os.environ['LOCAL_RANK'])
+        return int(os.environ['OMPI_COMM_WORLD_LOCAL_RANK'])
 
 
 def _get_world_size_env():
     if "WORLD_SIZE" in os.environ:
         return int(os.environ["WORLD_SIZE"])
     else:
-        return int(os.environ['WORLD_SIZE'])
+        return int(os.environ['OMPI_COMM_WORLD_SIZE'])
 
 
 def init_distributed_mode(args):
-    os.environ['MASTER_ADDR'] = '172.30.28.45'
-    os.environ['MASTER_PORT'] = '50010'
-    args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
-    os.environ['LOCAL_RANK'] = str(args.gpu)
-    os.environ['RANK'] = str(args.rank)
-    os.environ['WORLD_SIZE'] = str(args.world_size)
-    print('here')
-    print(args.dist_on_itp)
-    print(args.rank)
-    print(os.environ['RANK'])
-    print(args.world_size)
-    print(os.environ['WORLD_SIZE'])
-    print(args.gpu)
-    print(os.environ['LOCAL_RANK'])
-    print('here')
-   
     if args.dist_on_itp:
         args.rank = _get_rank_env()
         args.world_size = _get_world_size_env()  # int(os.environ['OMPI_COMM_WORLD_SIZE'])
         args.gpu = _get_local_rank_env()
-
+        os.environ['MASTER_ADDR'] = '172.30.28.45'
+        os.environ['MASTER_PORT'] = '50010'
+        args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
+        os.environ['LOCAL_RANK'] = str(args.gpu)
+        os.environ['RANK'] = str(args.rank)
+        os.environ['WORLD_SIZE'] = str(args.world_size)
         # ["RANK", "WORLD_SIZE", "MASTER_ADDR", "MASTER_PORT", "LOCAL_RANK"]
-    #elif 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
-    #    args.rank = int(os.environ["RANK"])
-    #    args.world_size = int(os.environ['WORLD_SIZE'])
-    #    args.gpu = int(os.environ['LOCAL_RANK'])
-    #elif 'SLURM_PROCID' in os.environ:
-    #    args.rank = int(os.environ['SLURM_PROCID'])
-    #    args.gpu = args.rank % torch.cuda.device_count()
-    #else:
-    #    print('Using distributed mode')
-    #    args.distributed =
-    #    return
+    elif 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
+        args.rank = int(os.environ["RANK"])
+        args.world_size = int(os.environ['WORLD_SIZE'])
+        args.gpu = int(os.environ['LOCAL_RANK'])
+    elif 'SLURM_PROCID' in os.environ:
+        args.rank = int(os.environ['SLURM_PROCID'])
+        args.gpu = args.rank % torch.cuda.device_count()
+    else:
+        print('Not using distributed mode')
+        args.distributed = False
+        return
 
     args.distributed = True
 

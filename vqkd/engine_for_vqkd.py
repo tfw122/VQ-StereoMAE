@@ -185,7 +185,7 @@ def calculate_codebook_usage(data_loader, model, device, log_writer=None, epoch=
     for step, (images, _) in enumerate(metric_logger.log_every(data_loader, 10, header)):
         images = images.to(device, non_blocking=True)
 
-        outputs = utils.get_model_error_fix(model).get_tokens(images)['token'].view(-1)
+        outputs = utils.get_model(model).get_tokens(images)['token'].view(-1)
         
         outputs_gather_list = [torch.zeros_like(outputs) for _ in range(utils.get_world_size())]
         dist.all_gather(outputs_gather_list, outputs)

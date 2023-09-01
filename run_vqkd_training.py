@@ -55,7 +55,7 @@ def get_args():
                         help='Image process type (default, dall-e)')
     parser.add_argument('--input_size', default=224, type=int, help='images input size for backbone')
 
-    parser.add_argument('--gpu', type=int, default=1, help='GPU ID to use.')
+    parser.add_argument('--gpu', type=int, default=-1, help='GPU ID to use.')
     # regress feature
     parser.add_argument('--teacher_model_type', default='clip', type=str, help='teacher_model_type during training')
     parser.add_argument('--teacher_input_size', default=224, type=int, help='teacher_input_size for clip-large p14')
@@ -179,7 +179,6 @@ def main(args):
    
 
     model = get_model(args)
-    model = utils.get_model_error_fix(model)
 
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
@@ -262,11 +261,10 @@ def main(args):
     optimizer = create_optimizer(args, model_without_ddp)
     loss_scaler = NativeScaler()
 
-    #if args.distributed:
-    #if True:
+    if args.distributed:
 
-        #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-        #model_without_ddp = model.module
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+        model_without_ddp = model.module
 
     print("Use step level LR & WD scheduler!")
     lr_schedule_values = utils.cosine_scheduler(
