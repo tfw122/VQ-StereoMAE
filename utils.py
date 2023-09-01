@@ -371,9 +371,7 @@ def _get_world_size_env():
 
 def init_distributed_mode(args):
     if args.dist_on_itp:
-        args.rank = _get_rank_env()
-        args.world_size = _get_world_size_env()  # int(os.environ['OMPI_COMM_WORLD_SIZE'])
-        args.gpu = _get_local_rank_env()
+        rank = os.environ.get('RANK', 'Default Value')
         os.environ['MASTER_ADDR'] = '172.30.28.45'
         os.environ['MASTER_PORT'] = '50010'
         args.dist_url = "tcp://%s:%s" % (os.environ['MASTER_ADDR'], os.environ['MASTER_PORT'])
