@@ -136,7 +136,7 @@ def get_args():
     parser.add_argument('--rank', type=int, default=1, help='Rank for distributed training')
     parser.add_argument('--world_size', default=1, type=int,
                         help='number of distributed processes')
-    parser.add_argument('--local_rank', default=-1, type=int)
+    parser.add_argument('--local_rank', default=0, type=int)
     parser.add_argument('--dist_on_itp', default = True, action='store_true')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
 
