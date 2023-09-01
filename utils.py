@@ -78,12 +78,12 @@ class SmoothedValue(object):
     @property
     def median(self):
         d = torch.tensor(list(self.deque))
-        return d.median().item()
+        return d.median().sum()
 
     @property
     def avg(self):
         d = torch.tensor(list(self.deque), dtype=torch.float32)
-        return d.mean().item()
+        return d.mean().sum()
 
     @property
     def global_avg(self):
@@ -116,7 +116,7 @@ class MetricLogger(object):
             if v is None:
                 continue
             if isinstance(v, torch.Tensor):
-                v = v.item()
+                v = v.mean()
             assert isinstance(v, (float, int))
             self.meters[k].update(v)
 
@@ -206,7 +206,7 @@ class TensorboardLogger(object):
             if v is None:
                 continue
             if isinstance(v, torch.Tensor):
-                v = v.item()
+                v = v.sum()
             assert isinstance(v, (float, int))
             self.writer.add_scalar(head + "/" + k, v, self.step if step is None else step)
     
@@ -463,7 +463,7 @@ def get_grad_norm(parameters, norm_type=2):
     total_norm = 0
     for p in parameters:
         param_norm = p.grad.data.norm(norm_type)
-        total_norm += param_norm.item() ** norm_type
+        total_norm += param_norm.sum() ** norm_type
     total_norm = total_norm ** (1. / norm_type)
     return total_norm
 
