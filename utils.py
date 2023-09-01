@@ -378,8 +378,11 @@ def init_distributed_mode(args):
     print('here')
     print(args.dist_on_itp)
     print(args.rank)
+    print(os.environ['RANK'])
     print(args.world_size)
+    print(os.environ['WORLD_SIZE'])
     print(args.gpu)
+    print(os.environ['LOCAL_RANK'])
     print('here')
    
     if args.dist_on_itp:
