@@ -165,9 +165,9 @@ def get_model(args, **kwargs):
 
 
 def main(args):
-    utils.init_distributed_mode(args)
+    #utils.init_distributed_mode(args)
 
-    print(args)
+    #print(args)
 
     device = torch.device(args.device)
 
