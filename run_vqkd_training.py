@@ -181,10 +181,8 @@ def main(args):
    
 
     model = get_model(args).to(device)
-    print(type(model.module))
 
     model = torch.nn.DataParallel(model)
-    print(type(model.module))
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
     if args.disable_eval:
@@ -192,7 +190,6 @@ def main(args):
     else:
         dataset_val = build_vqkd_dataset(is_train=False, args=args)
 
-    model = torch.nn.DataParallel(model)
     
     if args.rank == 0 and args.log_dir is not None:
         os.makedirs(args.log_dir, exist_ok=True)
