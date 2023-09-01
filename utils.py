@@ -351,21 +351,21 @@ def _get_rank_env():
     if "RANK" in os.environ:
         return int(os.environ["RANK"])
     else:
-        return int(os.environ['OMPI_COMM_WORLD_RANK'])
+        return int(os.environ['RANK'])
 
 
 def _get_local_rank_env():
     if "LOCAL_RANK" in os.environ:
         return int(os.environ["LOCAL_RANK"])
     else:
-        return int(os.environ['OMPI_COMM_WORLD_LOCAL_RANK'])
+        return int(os.environ['LOCAL_RANK'])
 
 
 def _get_world_size_env():
     if "WORLD_SIZE" in os.environ:
         return int(os.environ["WORLD_SIZE"])
     else:
-        return int(os.environ['OMPI_COMM_WORLD_SIZE'])
+        return int(os.environ['WORLD_SIZE'])
 
 
 def init_distributed_mode(args):
