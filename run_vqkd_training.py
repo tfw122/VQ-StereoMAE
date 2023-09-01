@@ -247,12 +247,12 @@ def main(args):
     optimizer = create_optimizer(args, model_without_ddp)
     loss_scaler = NativeScaler()
 
-    if args.distributed:
+    #if args.distributed:
 
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-        model_without_ddp = model.module
-    else:
-        pass
+    #    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+    #    model_without_ddp = model.module
+    #else:
+    #    pass
 
     print("Use step level LR & WD scheduler!")
     lr_schedule_values = utils.cosine_scheduler(
