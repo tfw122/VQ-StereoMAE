@@ -261,6 +261,8 @@ def main(args):
     #    pass
 
     print("Use step level LR & WD scheduler!")
+    print(type(model))
+    print(type(model.module))
     lr_schedule_values = utils.cosine_scheduler(
         args.lr, args.min_lr, args.epochs, len(data_loader_train),
         warmup_epochs=args.warmup_epochs, warmup_steps=args.warmup_steps,
