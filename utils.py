@@ -230,19 +230,23 @@ def _load_checkpoint_for_ema(model_ema, checkpoint):
     model_ema._load_checkpoint(mem_file)
 
 
-def setup_for_distributed(is_master):
+def synchronize_between_processes(self):
     """
-    This function disables printing when not in master process
+    Warning: does not synchronize the deque!
     """
-    import builtins as __builtin__
-    builtin_print = __builtin__.print
+    # Check if distributed is available and initialized
+    if is_dist_avail_and_initialized():
+        print("Warning: Synchronization function called in DataParallel mode. Synchronization skipped.")
+        return
 
-    def print(*args, **kwargs):
-        force = kwargs.pop('force', False)
-        if is_master or force:
-            builtin_print(*args, **kwargs)
+    # The following distributed synchronization code will not be executed
+    t = torch.tensor([self.count, self.total], dtype=torch.float64, device='cuda')
+    dist.barrier()
+    dist.all_reduce(t)
+    t = t.tolist()
+    self.count = int(t[0])
+    self.total = t[1]
 
-    __builtin__.print = print
 
 
 def is_dist_avail_and_initialized():

@@ -23,6 +23,7 @@ import os
 from pathlib import Path
 from timm.models import create_model
 from timm.optim import create_optimizer as create_optimizer
+import torch.nn as nn
 import torch.distributed as dist
 #from timm.optim.optim_factory import create_optimizer
 
@@ -137,7 +138,7 @@ def get_args():
     parser.add_argument('--world_size', default=1, type=int,
                         help='number of distributed processes')
     parser.add_argument('--local_rank', default=0, type=int)
-    parser.add_argument('--dist_on_itp', default = True, action='store_true')
+    parser.add_argument('--dist_on_itp', default = False, action='store_true')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
 
     return parser.parse_args()
@@ -162,6 +163,7 @@ def get_model(args, **kwargs):
     return model
 
 
+
 def main(args):
     utils.init_distributed_mode(args)
 
@@ -170,15 +172,16 @@ def main(args):
     device = torch.device(args.device)
 
     # fix the seed for reproducibility
-    seed = args.seed + utils.get_rank()
-    torch.manual_seed(seed)
-    np.random.seed(seed)
+    #seed = args.seed + utils.get_rank()
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
     # random.seed(seed)
 
     cudnn.benchmark = True
    
 
-    model = get_model(args)
+    model = get_model(args).to(device)
+
 
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
@@ -186,35 +189,10 @@ def main(args):
         dataset_val = None
     else:
         dataset_val = build_vqkd_dataset(is_train=False, args=args)
+
+    model = torch.nn.DataParallel(model)
     
-    if True:  # args.distributed:
-        num_tasks = utils.get_world_size()
-        global_rank = utils.get_rank()
-        sampler_rank = global_rank
-        num_training_steps_per_epoch = len(dataset_train) // args.batch_size // num_tasks
-
-        sampler_train = torch.utils.data.DistributedSampler(
-            dataset_train, num_replicas=num_tasks, rank=sampler_rank, shuffle=True
-        )
-        print("Sampler_train = %s" % str(sampler_train))
-        if args.dist_eval:
-            if len(dataset_val) % num_tasks != 0:
-                print('Warning: Enabling distributed evaluation with an eval dataset not divisible by process number. '
-                      'This will slightly alter validation results as extra duplicate entries are added to achieve '
-                      'equal num of samples per-process.')
-            sampler_val = torch.utils.data.DistributedSampler(
-                dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
-        else:
-            sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    else:
-        pass
-
-    if global_rank == 0 and args.log_dir is not None: 
-        os.makedirs(args.log_dir, exist_ok=True)
-        log_writer = utils.TensorboardLogger(log_dir=args.log_dir)
-    else:
-        log_writer = None
-
+    sampler_train = torch.utils.data.RandomSampler(dataset_train)
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
         batch_size=args.batch_size,
@@ -222,7 +200,8 @@ def main(args):
         pin_memory=args.pin_mem,
         drop_last=True,
     )
-    if dataset_val is not None:
+    if dataset_val:
+        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
         data_loader_val = torch.utils.data.DataLoader(
             dataset_val, sampler=sampler_val,
             batch_size=int(1.5 * args.batch_size),
@@ -249,7 +228,7 @@ def main(args):
     print(f'total number of learnable params: {n_learnable_parameters / 1e6} M')
     print(f'total number of fixed params in : {n_fix_parameters / 1e6} M')
 
-    total_batch_size = args.batch_size * utils.get_world_size()
+    total_batch_size = args.batch_size 
     args.lr = total_batch_size / 128 * args.lr
     print("LR = %.8f" % args.lr)
     print("Min LR = %.8f" % args.min_lr)
@@ -336,7 +315,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    opts = get_args()
-    if opts.output_dir:
-        Path(opts.output_dir).mkdir(parents=True, exist_ok=True)
-    main(opts)
+    args = get_args
+    main(args)
+

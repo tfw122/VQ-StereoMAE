@@ -110,7 +110,7 @@ def train_one_epoch(model: torch.nn.Module,
         if lr_scheduler is not None:
             lr_scheduler.step_update(start_steps + step)
     # gather the stats from all processes
-    metric_logger.synchronize_between_processes()
+    #metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
     
     # stat the codebook usage information
@@ -153,7 +153,7 @@ def evaluate(data_loader, model, device, log_writer=None, epoch=None, args=None)
         metric_logger.update(**new_log_loss)
 
     # gather the stats from all processes
-    metric_logger.synchronize_between_processes()
+    #metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
 
     # stat the codebook usage information
@@ -187,10 +187,11 @@ def calculate_codebook_usage(data_loader, model, device, log_writer=None, epoch=
 
         outputs = utils.get_model(model).get_tokens(images)['token'].view(-1)
         
-        outputs_gather_list = [torch.zeros_like(outputs) for _ in range(utils.get_world_size())]
-        dist.all_gather(outputs_gather_list, outputs)
-        all_tokens = torch.cat(outputs_gather_list, dim=0).view(-1) # [B * N * Ngpu, ]
-        
+        #outputs_gather_list = [torch.zeros_like(outputs) for _ in range(utils.get_world_size())]
+        #dist.all_gather(outputs_gather_list, outputs)
+        #all_tokens = torch.cat(outputs_gather_list, dim=0).view(-1) # [B * N * Ngpu, ]
+        all_tokens = outputs.view(-1)
+
         codebook_cnt += torch.bincount(all_tokens, minlength=codebook_num)
 
     # statistic
