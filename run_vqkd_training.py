@@ -168,6 +168,7 @@ def main(args):
     #utils.init_distributed_mode(args)
 
     #print(args)
+    args = get_args()
 
     device = torch.device(args.device)
 
