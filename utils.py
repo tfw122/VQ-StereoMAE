@@ -351,6 +351,7 @@ def _get_rank_env():
     if "RANK" in os.environ:
         return int(os.environ["RANK"])
     else:
+        print(os.environ)
         return int(os.environ['OMPI_COMM_WORLD_RANK'])
 
 
