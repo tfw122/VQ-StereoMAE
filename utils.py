@@ -116,7 +116,7 @@ class MetricLogger(object):
             if v is None:
                 continue
             if isinstance(v, torch.Tensor):
-                v = v.mean()
+                v = v.mean().item()
             assert isinstance(v, (float, int))
             self.meters[k].update(v)
 
