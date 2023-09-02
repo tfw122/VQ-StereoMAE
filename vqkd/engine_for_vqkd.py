@@ -151,7 +151,7 @@ def evaluate(data_loader, model, device, log_writer=None, epoch=None, args=None)
         images = batch.to(device, non_blocking=True)
         loss, log_loss = model(images)
 
-        metric_logger.update(loss=loss.item())
+        metric_logger.update(loss=loss.mean().item())
 
         new_log_loss = {k.split('/')[-1]:v for k, v in log_loss.items() if k not in ['total_loss']}
         metric_logger.update(**new_log_loss)
