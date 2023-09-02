@@ -55,7 +55,7 @@ def get_args():
                         help='Image process type (default, dall-e)')
     parser.add_argument('--input_size', default=224, type=int, help='images input size for backbone')
 
-    parser.add_argument('--gpu', type=int, default =1, help='GPU ID to use.')
+    parser.add_argument('--gpu', type=int, default =1, help='GPU ID to use.')whe
     # regress feature
     parser.add_argument('--teacher_model_type', default='clip', type=str, help='teacher_model_type during training')
     parser.add_argument('--teacher_input_size', default=224, type=int, help='teacher_input_size for clip-large p14')
@@ -103,7 +103,7 @@ def get_args():
  
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
 
-    parser.add_argument('--output_dir', default='',
+    parser.add_argument('--output_dir', default='../data/tokeniser_output/beit-2',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default=None,
                         help='path where to tensorboard log')
@@ -162,28 +162,16 @@ def get_model(args, **kwargs):
     return model
 
 
-
 def main(args):
-    #utils.init_distributed_mode(args)
-
-    #print(args)
-    #args = get_args()
-
     device = torch.device(args.device)
-
-    # fix the seed for reproducibility
-    #seed = args.seed + utils.get_rank()
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    # random.seed(seed)
-
     cudnn.benchmark = True
-   
 
     model = get_model(args).to(device)
 
     model = torch.nn.DataParallel(model)
-    print(type(model.module))
+
     # get dataset
     dataset_train = build_vqkd_dataset(is_train=True, args=args)
     if args.disable_eval:
@@ -225,8 +213,7 @@ def main(args):
     for part in ['encoder', 'decoder']:
 
         if isinstance(model, torch.nn.DataParallel):
-            print(type(model))
-            print(type(model.module))
+
             model_part = eval(f"model.module.{part}")
         else:
             model_part = eval(f"model.{part}")
@@ -261,8 +248,7 @@ def main(args):
     #    pass
 
     print("Use step level LR & WD scheduler!")
-    print(type(model))
-    print(type(model.module))
+
     lr_schedule_values = utils.cosine_scheduler(
         args.lr, args.min_lr, args.epochs, len(data_loader_train),
         warmup_epochs=args.warmup_epochs, warmup_steps=args.warmup_steps,

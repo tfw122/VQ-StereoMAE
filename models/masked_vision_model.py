@@ -16,6 +16,7 @@ from functools import partial
 import os 
 from collections import OrderedDict
 
+from vqkd.modeling_vqkd import vqkd_encoder_base_decoder_3x768x12_clip
 from modules.pos_embeds import *
 from base_model import BaseModel
 from modules.image_encoder import *
@@ -27,6 +28,9 @@ from losses.image_reconstruction import MaskedImageLoss, scale_pyramid
 from datasets.vision_transforms_utils import UnNormalise
 from imports.constants import IMAGE_COLOR_MEAN, IMAGE_COLOR_STD
 from torchmetrics import Accuracy, Precision, F1Score, Recall, AUROC
+import vqkd.modeling_vqkd 
+from timm.models import create_model
+
 
 @registry.register_model("masked_image_autoencoder")
 class MaskedImageAutoEncoder(BaseModel):
@@ -47,7 +51,49 @@ class MaskedImageAutoEncoder(BaseModel):
         if os.path.exists(self.image_out_dir)!=True:
             os.makedirs(self.image_out_dir)
         # patch embed args;
-        self.mask_ratio = self.model_config.mask_ratio
+
+        self.patch_embed = PatchEmbed(
+            img_size=self.dataset_config.preprocess.vision_transforms.params.Resize.size,
+            patch_size=self.model_config.image_encoder.patch_size,
+            in_channels=self.model_config.image_encoder.in_channels,
+            embed_dim=self.model_config.image_encoder.embed_dim,
+        )
+        num_patches = self.patch_embed.num_patches
+        self.num_heads = self.model_config.num_heads
+
+
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, self.model_config.image_encoder.embed_dim))
+        self.mask_token = nn.Parameter(torch.zeros(1, 1, self.model_config.image_encoder.embed_dim))    
+        #self.mask_ratio = self.model_config.mask_ratio
+  
+        self.pos_embed = nn.Parameter(torch.zeros(1, 1 + 1, self.model_config.image_encoder.embed_dim))
+
+        self.pos_drop = nn.Dropout(p=0.1)
+
+        self.rel_pos_bias = None
+
+        dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.depth)]  
+        self.blocks = nn.ModuleList([
+            Block(
+                dim=self.model_config.image_encoder.embed_dim, num_heads=self.model_config.num_heads, mlp_ratio=self.model_config.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
+                drop=self.model_config.drop_rate, attn_drop=self.model_config.attn_drop_rate, drop_path=dpr[i], norm_layer=self.model_config.norm_layer,
+                init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
+                attn_head_dim=self.model_config.attn_head_dim,
+            )
+            for i in range(self.model_config.depth)])
+        self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim)
+        
+        self.init_std = self.model_config.init_std
+        self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
+
+        if self.pos_embed is not None:
+            trunc_normal_(self.pos_embed, std=self.init_std)
+        trunc_normal_(self.cls_token, std=self.init_std)
+        trunc_normal_(self.mask_token, std=self.init_std)
+        trunc_normal_(self.lm_head.weight, std=self.init_std)
+        self.apply(self._init_weights)
+        self.fix_init_weight()
+
         self.finetune_imagenet= self.model_config.finetune_imagenet
         self.num_samples_to_visualise = self.model_config.num_samples_to_visualise
         self.frequency_to_visualise = self.model_config.frequency_to_visualise
@@ -89,6 +135,18 @@ class MaskedImageAutoEncoder(BaseModel):
         if self.finetune_imagenet!=None:
             self.load_imagenet_weights()
             print('OG imagenet weights loaded from: {} \n to commence finetuning'.format(self.finetune_imagenet))
+
+    def get_visual_tokenizer(args):
+        print(f"Creating visual tokenizer: {args.tokenizer_model}")
+        model = create_model(
+                args.tokenizer_model,
+                pretrained=True,
+                pretrained_weight=args.tokenizer_weight,
+                as_tokenzer=True,
+                n_code=args.codebook_size, 
+                code_dim=args.codebook_dim,
+            ).eval()
+        return model
 
     def load_imagenet_weights(self):
         # load the model dictionary
@@ -305,6 +363,7 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         super().__init__()
         print('for this work well, make sure inputs are not normalised!')
         self.config = config
+        
         self.model_config = self.config.model_config
         self.dataset_config =  self.config.dataset_config
         assert self.model_config.loss_type=='gan' or self.model_config.loss_type=='gan_perceptual', "GAN Loss type must be a gan to use this model!"
@@ -325,6 +384,8 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         in_channels = self.model_config.image_encoder.in_channels
         embed_dim = self.model_config.image_encoder.embed_dim
         self.norm_layer_arg= self.model_config.norm_layer_arg
+
+        self.tokenizer = vqkd.get_visual_tokenizer(args)
         
         if self.norm_layer_arg=='partial':
             self.norm_layer = partial(nn.LayerNorm, eps=1e-6)
@@ -348,6 +409,20 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
             self.load_imagenet_weights()
             print('og imagenet weights loaded from: {} \n to commence finetuning'.format(self.finetune_imagenet))
 
+
+
+    def get_visual_tokenizer(args):
+        print(f"Creating visual tokenizer: {args.tokenizer_model}")
+        model = create_model(
+                args.tokenizer_model,
+                pretrained=True,
+                pretrained_weight=args.tokenizer_weight,
+                as_tokenzer=True,
+                n_code=args.codebook_size, 
+                code_dim=args.codebook_dim,
+            ).eval()
+        return model
+    
     def load_imagenet_weights(self):
         # load the model dictionary
         # NOTE: ONLY encoder weights should be loaded; decoder has to be trained from scratch for the specific data;
