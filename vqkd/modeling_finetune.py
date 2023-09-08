@@ -158,7 +158,7 @@ class Attention(nn.Module):
         return x
 
 
-class ABlock(nn.Module):
+class Block(nn.Module):
 
     def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
                  drop_path=0., init_values=None, act_layer=nn.GELU, norm_layer=nn.LayerNorm,
