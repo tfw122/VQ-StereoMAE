@@ -18,7 +18,7 @@ from collections import OrderedDict
 
 from vqkd.modeling_vqkd import vqkd_encoder_base_decoder_3x768x12_clip
 from modules.pos_embeds import *
-from base_model import BaseModel
+from models.base_model import BaseModel
 from modules.image_encoder import *
 from modules.masked_vision_layers import *
 from modules.discriminators import Discriminator, MSGDiscriminator
