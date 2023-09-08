@@ -31,7 +31,7 @@ class Args:
         #self.parser.add_argument("--tokenizer_model", type=str, default="vqkd_encoder_base_decoder_3x768x12_clip")
     
         print("added tokeniser model")
-        print(self.parser.tokenizer_model)
+        #print(self.parser.tokenizer_model)
 
         # This is needed to support torch.distributed.launch
         self.parser.add_argument(
