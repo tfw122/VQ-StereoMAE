@@ -79,7 +79,7 @@ class LightningTrainer(BaseTrainer):
 
         lightning_params_dict = OmegaConf.to_container(lightning_params, resolve=True)
         # max epochs specified in trainer_config;
-        self.trainer = Trainer(resume_from_checkpoint=self.resume_from_checkpoint,
+        self.trainer = Trainer(
                                 default_root_dir=self.log_dir,
                                 logger= self.tb_writer,
                                 callbacks= [self.checkpoint_callback, self.batch_checkpoint_callback], #[[]]+self.callbacks_list][0]
