@@ -13,6 +13,8 @@ def main():
     opts = parser.parse_args()
 
     config = build_config(opts)
+    print(config)
+    print(config.tokenizer_model)
 
     fileio_client = FileIOClient(config)
 

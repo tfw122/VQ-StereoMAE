@@ -214,7 +214,6 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     print("trainer cls", trainer_cls)
     data_builder = build_datamodule(config)
 
-    print(config)
     print("tokeniser", config.tokenizer_model)
     tokenizer = get_visual_tokenizer(config)
 
