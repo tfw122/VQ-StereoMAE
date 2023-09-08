@@ -6,6 +6,7 @@ from trainers.lightning_trainer import *
 from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaskedImageModellingDatasetModule
 from models.masked_vision_model import MultiScaleMaskedImageAutoEncoder
 
+from datasets.transforms.vision_transforms import VisionTransforms
 
 def main():
     setup_imports()
