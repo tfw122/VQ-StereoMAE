@@ -217,7 +217,7 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     data_builder = build_datamodule(config)
 
     print("tokeniser", config.model_config.tokenizer_model)
-    tokenizer = get_visual_tokenizer(config)
+    #tokenizer = get_visual_tokenizer(config)
 
     model = build_model(config, ckpt_path)
     # get the dataloaders;
