@@ -73,7 +73,7 @@ class MaskedImageAutoEncoder(BaseModel):
 
         self.rel_pos_bias = None
 
-        dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.depth)]  
+        dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.image_encoder.depth)]  
         self.blocks = nn.ModuleList([
             Block(
                 dim=self.model_config.image_encoder.embed_dim, num_heads = self.model_config.image_encoder.num_heads, mlp_ratio=self.model_config.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
@@ -436,7 +436,7 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
 
         self.rel_pos_bias = None
 
-        dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.depth)]  
+        dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.image_encoder.depth)]  
 
         self.blocks = nn.ModuleList([Block(
             dim=self.model_config.image_encoder.embed_dim, num_heads=self.model_config.num_heads, mlp_ratio=self.model_config.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
