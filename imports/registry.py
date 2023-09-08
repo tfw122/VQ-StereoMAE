@@ -139,7 +139,7 @@ class Registry:
         """
 
         def wrap(func):
-            from src.modules.metrics import BaseMetric
+            from modules.metrics import BaseMetric
 
             assert issubclass(
                 func, BaseMetric
@@ -323,7 +323,7 @@ class Registry:
         """
 
         def wrap(decoder_cls):
-            from src.utils.text import TextDecoder
+            from utils.text import TextDecoder
 
             assert issubclass(
                 decoder_cls, TextDecoder
@@ -347,7 +347,7 @@ class Registry:
         """
 
         def wrap(encoder_cls):
-            from src.models.modules.encoders import Encoder
+            from modules.encoders import Encoder
 
             assert issubclass(
                 encoder_cls, Encoder
