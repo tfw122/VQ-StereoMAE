@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 from collections  import OrderedDict
 from functools    import partial
-from src.losses.dall_e.dall_e_utils import Conv2d
+from losses.dall_e.dall_e_utils import Conv2d
 
 @attr.s(eq=False, repr=False)
 class EncoderBlock(nn.Module):
