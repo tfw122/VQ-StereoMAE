@@ -143,8 +143,8 @@ class MaskedImageAutoEncoder(BaseModel):
                 pretrained=True,
                 #pretrained_weight=args.tokenizer_weight,
                 as_tokenzer=True,
-                n_code=args.codebook_size, 
-                code_dim=args.codebook_dim,
+                n_code=args.model_config.codebook_size, 
+                code_dim=args.model_config.codebook_dim,
             ).eval()
         return model
 
