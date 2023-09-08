@@ -50,6 +50,7 @@ class Registry:
         "optimizer_name_mapping": {},
         "scheduler_name_mapping": {},
         "processor_name_mapping": {},
+        "processor_name_mapping": {},
         "encoder_name_mapping": {},
         "decoder_name_mapping": {},
         "transformer_backend_name_mapping": {},
@@ -460,8 +461,6 @@ class Registry:
 
     @classmethod
     def get_preprocessor_class(cls, name):
-        print(cls)
-        print(name)
         return cls.mapping["processor_name_mapping"].get(name, None)
 
     @classmethod

@@ -31,7 +31,6 @@ class StereoVisionMaskedImageModellingDatasetModule(BaseDatasetBuilder):
 
     def preprocess(self, split):
         data_transform_cls = registry.get_preprocessor_class(self.transforms_name)
-        print("cls", data_transform_cls)
         data_transforms_obj = data_transform_cls(self.config, split)
         return data_transforms_obj
 
