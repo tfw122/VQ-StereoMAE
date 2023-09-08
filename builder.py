@@ -12,6 +12,7 @@ from utils import *
 from imports.registry import registry
 from omegaconf import DictConfig, OmegaConf, errors as OCErrors
 import fairscale.optim.oss as OSS
+from run_vqkd_training import get_vqkd_model
 logger = logging.getLogger(__name__)
 
 def build_config(args):
