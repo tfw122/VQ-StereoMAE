@@ -70,6 +70,7 @@ class MaskedImageAutoEncoder(BaseModel):
         self.pos_embed = nn.Parameter(torch.zeros(1, 1 + 1, self.model_config.image_encoder.embed_dim))
 
         self.pos_drop = nn.Dropout(p=0.1)
+        self.qk_scale = self.model_config.qk_scale
 
         self.rel_pos_bias = None
 
