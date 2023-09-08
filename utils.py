@@ -760,7 +760,7 @@ def setup_imports():
     modules_pattern = os.path.join(modules_folder, "**", "*.py")
 
 
-    importlib.import_module("common.meter")
+    importlib.import_module("imports.meter")
 
     files = (
         glob.glob(datasets_pattern, recursive=True)
