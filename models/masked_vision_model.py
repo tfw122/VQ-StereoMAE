@@ -84,7 +84,7 @@ class MaskedImageAutoEncoder(BaseModel):
         #self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim)
         
         #self.init_std = self.model_config.init_std
-        self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
+        #self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
 
         if self.pos_embed is not None:
             trunc_normal_(self.pos_embed, std=self.init_std)
