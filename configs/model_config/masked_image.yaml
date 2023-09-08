@@ -65,3 +65,4 @@ model_config:
   drop_path_rate: 0.1
   qkv_bias: True
   qk_scale: None
+  drop_rate: 0.1
