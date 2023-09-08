@@ -67,7 +67,7 @@ model_config:
   qk_scale: None
   drop_rate: 0.1
   attn_drop_rate: 0.0
-  norm_layer: partial
+  norm_layer: norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
   init_values: 1e-4
   use_rel_pos_bias: False
   attn_head_dim: 64
