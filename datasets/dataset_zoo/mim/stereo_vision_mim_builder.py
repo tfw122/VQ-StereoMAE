@@ -24,6 +24,7 @@ class StereoVisionMaskedImageModellingDatasetModule(BaseDatasetBuilder):
         # get the names;
         self.dataset_name = self.config.dataset_config.dataset_name
         self.transforms_name = self.config.dataset_config.preprocess.name
+        print("transform name", self.transforms_name)
         self.image_type = self.dataset_config.dataset_mode.image_type
         self.individual_name = self.dataset_config.dataset_mode.individual_name
 
