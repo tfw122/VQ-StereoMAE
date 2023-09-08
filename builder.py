@@ -212,6 +212,7 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     trainer_type = config.training.trainer
     print("trainer type",trainer_type)
     trainer_cls = registry.get_trainer_class(trainer_type)
+    print("trainer cls", trainer_cls)
     data_builder = build_datamodule(config)
     tokenizer = get_visual_tokenizer(config)
     model = build_model(config, ckpt_path)
