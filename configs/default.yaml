@@ -72,7 +72,7 @@ trainer:
         #accelerator: gpu
         num_nodes: 1
         #devices: 0
-        precision: 16 # for Downstream = 16 for MIM = 32.
+        precision: 32 # for Downstream = 16 for MIM = 32.
         deterministic: false
         benchmark: false
         max_steps: -1
