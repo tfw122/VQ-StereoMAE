@@ -63,3 +63,4 @@ model_config:
   load_checkpoint: null
 
   drop_path_rate: 0.1
+  qkv_bias: True
