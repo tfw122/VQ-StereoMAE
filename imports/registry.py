@@ -23,8 +23,6 @@ Various decorators for registry different kind of classes with unique keys
 - Register a test reporter: ``@registry.register_test_reporter``
 """
 
-from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaskedImageModellingDatasetModule
-
 from utils import setup_imports
 print()
 
