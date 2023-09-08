@@ -78,7 +78,7 @@ class MaskedImageAutoEncoder(BaseModel):
             Block(
                 dim=self.model_config.image_encoder.embed_dim, num_heads = self.model_config.image_encoder.num_heads, mlp_ratio=self.model_config.image_encoder.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
                 drop=self.model_config.drop_rate, attn_drop=self.model_config.attn_drop_rate, drop_path=dpr[i], norm_layer=self.model_config.norm_layer,
-                init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
+                qk_scale= model.config.qk_scale ,init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
                 attn_head_dim=self.model_config.attn_head_dim,
             )
             for i in range(self.model_config.image_encoder.depth)])
