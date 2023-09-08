@@ -23,6 +23,8 @@ Various decorators for registry different kind of classes with unique keys
 - Register a test reporter: ``@registry.register_test_reporter``
 """
 from utils import setup_imports
+print()
+
 
 class Registry:
     r"""Class for registry object which acts as central source of truth

@@ -725,6 +725,7 @@ def get_max_updates(config_max_updates, config_max_epochs, train_loader, update_
 
 def setup_imports():
     from imports.registry import registry
+    print('here')
 
     # First, check if imports are already setup
     has_already_setup = registry.get("imports_setup", no_warning=True)
