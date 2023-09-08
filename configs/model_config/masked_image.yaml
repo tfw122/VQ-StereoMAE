@@ -69,3 +69,4 @@ model_config:
   attn_drop_rate: 0.0
   norm_layer: partial
   init_values: 1e-4
+  use_rel_pos_bias: False
