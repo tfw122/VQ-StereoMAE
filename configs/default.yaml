@@ -68,7 +68,7 @@ trainer:
     type: lightning
     params:
         #gpu: 0 # [id1, id2 ...] for selecting specific GPUs, -1 for all gpus
-        tpu_cores: null
+        #tpu_cores: null
         #accelerator: gpu
         num_nodes: 1
         #devices: 0
