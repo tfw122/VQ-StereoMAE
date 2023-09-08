@@ -81,7 +81,7 @@ class MaskedImageAutoEncoder(BaseModel):
                 init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
                 attn_head_dim=self.model_config.attn_head_dim,
             )
-            for i in range(self.model_config.depth)])
+            for i in range(self.model_config.image_encoder.depth)])
         self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim)
         
         self.init_std = self.model_config.init_std
@@ -444,7 +444,7 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
             init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
             attn_head_dim=self.model_config.attn_head_dim,
             )
-            for i in range(self.model_config.depth)])   
+            for i in range(self.model_config.image_encoder.depth)])   
         self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim) 
         self.init_std = self.model_config.init_std  
         self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
