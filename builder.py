@@ -223,7 +223,7 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     # get the dataloaders;
     dataset_loaders= load_datasets(data_builder)
     # initiate trainer;
-    trainer_obj = trainer_cls(config, fileio_client, dataset_loaders, model, tokenizer)
+    trainer_obj = trainer_cls(config, fileio_client, dataset_loaders, model)
 
     return trainer_obj
 
