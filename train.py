@@ -7,6 +7,11 @@ from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaske
 from models.masked_vision_model import MultiScaleMaskedImageAutoEncoder
 
 from datasets.transforms.vision_transforms import VisionTransforms
+from datasets.dataset_zoo.mim.mim_data.cityscapes_dataset import CityScapesLoader
+from datasets.dataset_zoo.mim.mim_data.kitti_dataset import KittiLoaderCustom
+from datasets.dataset_zoo.mim.mim_data.falling_things_dataset import FallingThingsSingleLoader, FallingThingsMixedLoader
+from datasets.dataset_zoo.mim.mim_data.sceneflow_dataset import SceneFlowLoader
+from datasets.dataset_zoo.mim.mim_data.sintel_stereo_dataset import SintelStereoLoader
 
 def main():
     setup_imports()
