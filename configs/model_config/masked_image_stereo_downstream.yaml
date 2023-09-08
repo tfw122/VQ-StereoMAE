@@ -28,7 +28,7 @@ model_config:
     train_iters: 22 # number of updates to the disparity field in each forward pass
     valid_iters: 32 # number of flow-field updates during validation forward pass
 
-  norm_layer_arg: partial
+  #norm_layer_arg: partial
 
   ckpt_monitor: val_loss
 
