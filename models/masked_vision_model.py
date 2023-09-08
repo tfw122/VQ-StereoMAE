@@ -59,7 +59,8 @@ class MaskedImageAutoEncoder(BaseModel):
             embed_dim=self.model_config.image_encoder.embed_dim,
         )
         num_patches = self.patch_embed.num_patches
-        self.num_heads = self.model_config.num_heads
+        self.num_heads = self.model_config.image_encoder.num_heads
+        #self.num_heads = self.model_config.num_heads
 
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, self.model_config.image_encoder.embed_dim))
@@ -75,7 +76,7 @@ class MaskedImageAutoEncoder(BaseModel):
         dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.depth)]  
         self.blocks = nn.ModuleList([
             Block(
-                dim=self.model_config.image_encoder.embed_dim, num_heads=self.model_config.num_heads, mlp_ratio=self.model_config.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
+                dim=self.model_config.image_encoder.embed_dim, num_heads = self.model_config.image_encoder.num_heads, mlp_ratio=self.model_config.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
                 drop=self.model_config.drop_rate, attn_drop=self.model_config.attn_drop_rate, drop_path=dpr[i], norm_layer=self.model_config.norm_layer,
                 init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
                 attn_head_dim=self.model_config.attn_head_dim,
@@ -422,7 +423,7 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         )
 
         num_patches = self.patch_embed.num_patches
-        self.num_heads = self.model_config.num_heads
+        self.num_heads = self.model_config.image_encoder.num_headss
 
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, self.model_config.image_encoder.embed_dim))
