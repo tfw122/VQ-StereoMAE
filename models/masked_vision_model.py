@@ -79,7 +79,7 @@ class MaskedImageAutoEncoder(BaseModel):
             Block(
                 dim=self.model_config.image_encoder.embed_dim, num_heads = self.model_config.image_encoder.num_heads, mlp_ratio=self.model_config.image_encoder.mlp_ratio,
                 drop=self.model_config.drop_rate, attn_drop=self.model_config.attn_drop_rate, drop_path=dpr[i], norm_layer=self.model_config.norm_layer,
-                act_layer=self.model_config.act_layer
+                attn_head_dim=self.model_config.attn_head_dim, act_layer=self.model_config.act_layer
             )
             for i in range(self.model_config.image_encoder.depth)])
         self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim)
@@ -103,9 +103,13 @@ class MaskedImageAutoEncoder(BaseModel):
         self.patch_size = self.model_config.image_encoder.patch_size
         in_channels = self.model_config.image_encoder.in_channels
         embed_dim = self.model_config.image_encoder.embed_dim
-        #self.norm_layer_arg= self.model_config.norm_layer_arg
+        self.norm_layer_arg= self.model_config.norm_layer_arg
         
-
+        if self.norm_layer_arg=='partial':
+            self.norm_layer = partial(nn.LayerNorm, eps=1e-6)
+            print('using partial layer norm')
+        else:
+            self.norm_layer = nn.LayerNorm
         
         self.patch_embed = PatchEmbed(img_size, self.patch_size, in_channels, embed_dim)
         # --------------------------------------------------------------------------
@@ -464,8 +468,13 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         self.patch_size = self.model_config.image_encoder.patch_size
         in_channels = self.model_config.image_encoder.in_channels
         embed_dim = self.model_config.image_encoder.embed_dim
-        #= self.model_config.norm_layer_arg
+        self.norm_layer_arg= self.model_config.norm_layer_arg
         
+        if self.norm_layer_arg=='partial':
+            self.norm_layer = partial(nn.LayerNorm, eps=1e-6)
+            print('using partial layer norm')
+        else:
+            self.norm_layer = nn.LayerNorm
         
         self.patch_embed = PatchEmbed(img_size, self.patch_size, in_channels, embed_dim)
 
@@ -888,8 +897,13 @@ class VITEncoderDownStream(BaseModel):
         mlp_ratio = self.model_config.image_encoder.mlp_ratio
         depth = self.model_config.image_encoder.depth
 
-
-
+        self.norm_layer_arg= self.model_config.norm_layer_arg
+        
+        if self.norm_layer_arg=='partial':
+            self.norm_layer = partial(nn.LayerNorm, eps=1e-6)
+            print('using partial layer norm')
+        else:
+            self.norm_layer = nn.LayerNorm
 
         # if using public datasets i.e. ImageNet / CIFAR etc, then original VIT model can be used.
         if self.dataset_config.dataset_name=='imagenet' or self.dataset_config.dataset_name=='imagenet_vision':
