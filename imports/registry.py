@@ -402,7 +402,7 @@ class Registry:
         """
 
         def wrap(iteration_strategy_cls):
-            from src.datasets.iteration_strategies import IterationStrategy
+            from datasets.iteration_strategies import IterationStrategy
 
             assert issubclass(
                 iteration_strategy_cls, IterationStrategy
