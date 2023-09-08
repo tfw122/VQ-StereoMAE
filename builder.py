@@ -148,6 +148,7 @@ def build_dataset(config):
 def build_datamodule(config) -> pl.LightningDataModule:
     dataset_key= config.dataset_config.dataset_builder
     dataset_builder = registry.get_builder_class(dataset_key)
+    print("dataset builder",dataset_builder)
     
     assert dataset_builder, (
         f"Key {dataset_key} doesn't have a registered " + "dataset builder"
@@ -212,9 +213,9 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     trainer_cls = registry.get_trainer_class(trainer_type)
     print("trainer cls", trainer_cls)
     data_builder = build_datamodule(config)
-    print("data buildet",data_builder)
+
     tokenizer = get_visual_tokenizer(config)
-    print("tokeniser", tokenizer)
+
     model = build_model(config, ckpt_path)
     # get the dataloaders;
     dataset_loaders= load_datasets(data_builder)
