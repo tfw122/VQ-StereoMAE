@@ -66,3 +66,4 @@ model_config:
   qkv_bias: True
   qk_scale: None
   drop_rate: 0.1
+  attn_drop_rate: 0.0
