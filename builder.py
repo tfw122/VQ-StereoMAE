@@ -146,7 +146,7 @@ def build_dataset(config):
     # return builder_instance
 
 def build_datamodule(config) -> pl.LightningDataModule:
-    print(config)
+    #print(config)
     print(config.dataset_config.dataset_builder)
     dataset_key= config.dataset_config.dataset_builder
     dataset_builder = registry.get_builder_class(dataset_key)
@@ -210,6 +210,7 @@ def build_trainer(config, fileio_client, ckpt_path=None):
         (BaseTrainer): A trainer instance
     """
     trainer_type = config.training.trainer
+    print(trainer_type)
     trainer_cls = registry.get_trainer_class(trainer_type)
     data_builder = build_datamodule(config)
     tokenizer = get_visual_tokenizer(config)
