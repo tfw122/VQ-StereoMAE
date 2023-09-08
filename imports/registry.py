@@ -50,7 +50,7 @@ class Registry:
         "optimizer_name_mapping": {},
         "scheduler_name_mapping": {},
         "processor_name_mapping": {},
-        "processor_name_mapping": {},
+        "preprocessor_name_mapping": {},
         "encoder_name_mapping": {},
         "decoder_name_mapping": {},
         "transformer_backend_name_mapping": {},
