@@ -63,7 +63,7 @@ class VisionTransformerForMaskedImageModeling(nn.Module):
         self.norm = norm_layer(embed_dim)
 
         self.init_std = init_std
-        self.lm_head = nn.Linear(embed_dim, vocab_size)
+        #self.lm_head = nn.Linear(embed_dim, vocab_size)
 
         if self.pos_embed is not None:
             trunc_normal_(self.pos_embed, std=self.init_std)
