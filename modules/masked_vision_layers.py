@@ -1,8 +1,8 @@
 import torch 
 import torch.nn as nn 
 import torch.nn.functional as F 
-from src.models.modules.pos_embeds import *
-from src.models.modules.layer_utils import Flatten
+from modules.pos_embeds import *
+from modules.layer_utils import Flatten
 import timm
 from timm.models.vision_transformer import PatchEmbed, Block
 
