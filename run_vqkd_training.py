@@ -143,7 +143,7 @@ def get_args():
     return parser.parse_args()
 
 
-def get_model(args, **kwargs):
+def get_vqkd_model(args, **kwargs):
        
     model = create_model(
         args.model,
@@ -168,7 +168,7 @@ def main(args):
     np.random.seed(args.seed)
     cudnn.benchmark = True
 
-    model = get_model(args).to(device)
+    model = get_vqkd_model(args).to(device)
 
     model = torch.nn.DataParallel(model)
 

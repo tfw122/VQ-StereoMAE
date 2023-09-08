@@ -235,7 +235,7 @@ def load_datasets(data_module) -> None:
 
 def get_visual_tokenizer(args):
     print(f"Creating visual tokenizer: {args.model_config.tokenizer_model}")
-    model = get_model(
+    model = get_vqkd_model(
             args.model_config.tokenizer_model,
             pretrained=True,
             #pretrained_weight=args.tokenizer_weight,
