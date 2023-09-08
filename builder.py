@@ -146,8 +146,6 @@ def build_dataset(config):
     # return builder_instance
 
 def build_datamodule(config) -> pl.LightningDataModule:
-    #print(config)
-    print(config.dataset_config.dataset_builder)
     dataset_key= config.dataset_config.dataset_builder
     dataset_builder = registry.get_builder_class(dataset_key)
     
