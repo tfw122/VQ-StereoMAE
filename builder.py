@@ -214,7 +214,9 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     trainer_cls = registry.get_trainer_class(trainer_type)
     print("trainer cls", trainer_cls)
     data_builder = build_datamodule(config)
+    print("data buildet",data_builder)
     tokenizer = get_visual_tokenizer(config)
+    print("tokeniser", tokenizer)
     model = build_model(config, ckpt_path)
     # get the dataloaders;
     dataset_loaders= load_datasets(data_builder)
