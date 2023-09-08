@@ -61,3 +61,5 @@ model_config:
   frequency_to_visualise: 6000
   # load checkpoint; 
   load_checkpoint: null
+
+  drop_path_rate: 0.1
