@@ -141,7 +141,7 @@ class MaskedImageAutoEncoder(BaseModel):
         model = create_model(
                 args.model_config.tokenizer_model,
                 pretrained=True,
-                pretrained_weight=args.tokenizer_weight,
+                #pretrained_weight=args.tokenizer_weight,
                 as_tokenzer=True,
                 n_code=args.codebook_size, 
                 code_dim=args.codebook_dim,
