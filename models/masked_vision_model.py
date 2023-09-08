@@ -86,11 +86,6 @@ class MaskedImageAutoEncoder(BaseModel):
         #self.init_std = self.model_config.init_std
         #self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
 
-        if self.pos_embed is not None:
-            trunc_normal_(self.pos_embed, std=self.init_std)
-        trunc_normal_(self.cls_token, std=self.init_std)
-        trunc_normal_(self.mask_token, std=self.init_std)
-        trunc_normal_(self.lm_head.weight, std=self.init_std)
         self.apply(self._init_weights)
         self.fix_init_weight()
 
@@ -448,11 +443,8 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         #self.init_std = self.model_config.init_std  
         self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
 
-        if self.pos_embed is not None:
-            trunc_normal_(self.pos_embed, std=self.init_std)
-        trunc_normal_(self.cls_token, std=self.init_std)
-        trunc_normal_(self.mask_token, std=self.init_std)
-        trunc_normal_(self.lm_head.weight, std=self.init_std)
+
+
         self.apply(self._init_weights)
         self.fix_init_weight()
 
