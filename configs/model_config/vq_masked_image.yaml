@@ -1,36 +1,39 @@
-model_config = 'vq_masked_image'
+model_config: 'vq_masked_image'
 
-  image_encoder:
-    patch_size: [16, 32]  # can't use a standard square patch on a non-square image
-    in_channels: 3 
-    embed_dim: 768 # if using base vit model, embed_dim = 768; if using large, embed_dim=1024
-    depth: 12 # num layers of vit, for base: 12, for large: 24
+    n_embed: 8192
+    embed_dim: 32
+    decay: 0.99
+    process_type: 'default'
+    quantize_kmeans_init: True
+    teacher_model_type: 'clip'
+    decoder_out_dim: 512
+    rec_loss_type: 'cosine'
+
+image_encoder:
+    patch_size: [16, 32]
+    in_channels: 3
+    embed_dim: 768
+    depth: 12
     mlp_ratio: 4
-    num_heads: 12  # for base, num_heads=12; for large, num_heads=16
+    num_heads: 12
 
-    image_decoder:
+image_decoder:
     decoder_embed_dim: 512
     decoder_depth: 8
     decoder_num_heads: 16
-  
-    image_loss_weightings:
+
+image_loss_weightings:
     ssim: 0.85
     style: 40.0
     perc: 0.05
     gan: 0.7 
     l1: 1.0
 
-    discriminator:
-    depth: 6 # no. of conv blocks in the discriminator, 6 should be max; otherwise the image will be as small as 3x3 for which loss will be too shallow (almost zero)
-    conv_layer_type: default #equal / default
+discriminator:
+    depth: 6
+    conv_layer_type: 'default'
     feature_size_ndf: 512
     input_channels_nc: 3
-    gan_arch_type: msg # using single scale / MSG (multi scale) discriminator architecture. the args above are specifically for MSG GAN
-    # for single scale; architecture is set (similar to DC GAN). Change arh gan_arch_type to ensure loss functions run correctly.
+    gan_arch_type: 'msg'
 
-    tokenizer:
-    tokenizer_type: 
-    vocab_size: 
 
-  dall_e:
-    model_dir: ../data/pretrained_perceptual/dall_e

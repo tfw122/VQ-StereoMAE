@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 import torch 
 import torchmetrics
 import torch.nn as nn
-from .utils import *
+from utils import *
 from imports.registry import registry
 from omegaconf import DictConfig, OmegaConf, errors as OCErrors
 import fairscale.optim.oss as OSS
@@ -210,11 +210,12 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     trainer_type = config.training.trainer
     trainer_cls = registry.get_trainer_class(trainer_type)
     data_builder = build_datamodule(config)
+    tokenizer = get_visual_tokenizer(config)
     model = build_model(config, ckpt_path)
     # get the dataloaders;
     dataset_loaders= load_datasets(data_builder)
     # initiate trainer;
-    trainer_obj = trainer_cls(config, fileio_client, dataset_loaders, model)
+    trainer_obj = trainer_cls(config, fileio_client, dataset_loaders, model, tokenizer)
 
     return trainer_obj
 
@@ -224,6 +225,18 @@ def load_datasets(data_module) -> None:
     val_loader = data_module.val_dataloader()
     test_loader = data_module.test_dataloader()
     return data_module, train_loader, val_loader, test_loader
+
+def get_visual_tokenizer(args):
+    print(f"Creating visual tokenizer: {args.tokenizer_model}")
+    model = get_model(
+            args.tokenizer_model,
+            pretrained=True,
+            pretrained_weight=args.tokenizer_weight,
+            as_tokenzer=True,
+            n_code=args.codebook_size, 
+            code_dim=args.codebook_dim,
+        ).eval()
+    return model
 
 def build_callbacks(config):
     callbacks= {}

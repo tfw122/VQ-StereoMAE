@@ -166,7 +166,7 @@ class MaskedImageAutoEncoder(BaseModel):
         self.encoder.load_state_dict(model_dict)
         # if patch embed value != pretrained dict; throw an error; to ensure patchembed is correct.
         
-    def forward(self, x_left, x_right, mask_ratio=None):
+    def forward(self, x_left, x_right, mask_ratio=None, return_all_tokens = False, return_patch_tokens = False):
         # LEFT IMAGE INFERENCE
         # run encoder;
         if mask_ratio==None:
@@ -353,6 +353,45 @@ class MaskedImageAutoEncoder(BaseModel):
         aggregated_output = torch.cat([flattened_l_quant, flattened_r_quant, flattened_masked_output], dim=1)
         
         return aggregated_output
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @registry.register_model("masked_image_autoencoder_msg_gan")
 class MultiScaleMaskedImageAutoEncoder(BaseModel):
@@ -362,16 +401,61 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
     def __init__(self, config):
         super().__init__()
         print('for this work well, make sure inputs are not normalised!')
-        self.config = config
         
+        self.config = config
         self.model_config = self.config.model_config
         self.dataset_config =  self.config.dataset_config
         assert self.model_config.loss_type=='gan' or self.model_config.loss_type=='gan_perceptual', "GAN Loss type must be a gan to use this model!"
 
         self.image_out_dir= '{}/{}/mae_out_test_{}_{}_{}'.format(self.config.user_config.save_root_dir, self.config.user_config.username_prefix, self.dataset_config.dataset_name, self.model_config.loss_type, self.user_config.experiment_name)
+        
         if os.path.exists(self.image_out_dir)!=True:
             os.makedirs(self.image_out_dir)
+        
         # patch embed args;
+
+        self.patch_embed = PatchEmbed(
+        img_size=self.dataset_config.preprocess.vision_transforms.params.Resize.size,
+        patch_size=self.model_config.image_encoder.patch_size,
+        in_channels=self.model_config.image_encoder.in_channels,
+        embed_dim=self.model_config.image_encoder.embed_dim,
+        )
+
+        num_patches = self.patch_embed.num_patches
+        self.num_heads = self.model_config.num_heads
+
+
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, self.model_config.image_encoder.embed_dim))
+        self.mask_token = nn.Parameter(torch.zeros(1, 1, self.model_config.image_encoder.embed_dim))    
+        #self.mask_ratio = self.model_config.mask_ratio
+  
+        self.pos_embed = nn.Parameter(torch.zeros(1, 1 + 1, self.model_config.image_encoder.embed_dim))
+
+        self.pos_drop = nn.Dropout(p=0.1)
+
+        self.rel_pos_bias = None
+
+        dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.depth)]  
+
+        self.blocks = nn.ModuleList([Block(
+            dim=self.model_config.image_encoder.embed_dim, num_heads=self.model_config.num_heads, mlp_ratio=self.model_config.mlp_ratio, qkv_bias=self.model_config.qkv_bias, qk_scale=self.model_config.qk_scale,
+            drop=self.model_config.drop_rate, attn_drop=self.model_config.attn_drop_rate, drop_path=dpr[i], norm_layer=self.model_config.norm_layer,
+            init_values=self.model_config.init_values, window_size=self.patch_embed.patch_shape if self.model_config.use_rel_pos_bias else None,
+            attn_head_dim=self.model_config.attn_head_dim,
+            )
+            for i in range(self.model_config.depth)])   
+        self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim) 
+        self.init_std = self.model_config.init_std  
+        self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
+
+        if self.pos_embed is not None:
+            trunc_normal_(self.pos_embed, std=self.init_std)
+        trunc_normal_(self.cls_token, std=self.init_std)
+        trunc_normal_(self.mask_token, std=self.init_std)
+        trunc_normal_(self.lm_head.weight, std=self.init_std)
+        self.apply(self._init_weights)
+        self.fix_init_weight()
+
         self.mask_ratio = self.model_config.mask_ratio
         self.finetune_imagenet= self.model_config.finetune_imagenet
         self.num_samples_to_visualise = self.model_config.num_samples_to_visualise
@@ -384,8 +468,6 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         in_channels = self.model_config.image_encoder.in_channels
         embed_dim = self.model_config.image_encoder.embed_dim
         self.norm_layer_arg= self.model_config.norm_layer_arg
-
-        self.tokenizer = vqkd.get_visual_tokenizer(args)
         
         if self.norm_layer_arg=='partial':
             self.norm_layer = partial(nn.LayerNorm, eps=1e-6)
@@ -410,18 +492,32 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
             print('og imagenet weights loaded from: {} \n to commence finetuning'.format(self.finetune_imagenet))
 
 
+    def no_weight_decay(self):
+        return {'pos_embed', 'cls_token'}
 
-    def get_visual_tokenizer(args):
-        print(f"Creating visual tokenizer: {args.tokenizer_model}")
-        model = create_model(
-                args.tokenizer_model,
-                pretrained=True,
-                pretrained_weight=args.tokenizer_weight,
-                as_tokenzer=True,
-                n_code=args.codebook_size, 
-                code_dim=args.codebook_dim,
-            ).eval()
-        return model
+    def get_num_layers(self):
+        return len(self.blocks)
+    
+    def forward_features(self, x, bool_masked_pos):
+        x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
+        batch_size, seq_len, _ = x.size()
+        cls_tokens = self.cls_token.expand(batch_size, -1, -1)  
+        mask_token = self.mask_token.expand(batch_size, -1, -1)  
+
+        w = bool_masked_pos.unsqueeze(-1).type_as(mask_token)
+        x = x * (1 - w) + mask_token * w
+
+        x = torch.cat((cls_tokens, x), dim=1)
+        if self.pos_embed is not None:
+            x = x + self.pos_embed
+        x = self.pos_drop(x)
+
+        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
+        for blk in self.blocks:
+            x = blk(x, rel_pos_bias=rel_pos_bias)
+
+        return self.norm(x)
+    
     
     def load_imagenet_weights(self):
         # load the model dictionary
@@ -437,20 +533,104 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         self.generator.encoder.load_state_dict(model_dict)
         # if patch embed value != pretrained dict; throw an error; to ensure patchembed is correct.
         
-    def forward(self, x_left, x_right):
-        # LEFT IMAGE INFERENCE
-        # run encoder; x, mask, ids_restore, prev_feat_maps
-        l_latent, l_mask, l_ids_restore, l_prev_feat_maps = self.generator.encoder(x_left, self.mask_ratio)
-        # run decoder;
-        l_pred, l_rgb_outputs = self.generator.decoder(l_latent, l_ids_restore, l_prev_feat_maps)  # [N, L, p*p*3]
+    def forward(self, x_left, x_right, bool_masked_pos=None, layer_id=12, return_qkv=False, split_out_as_qkv=False, return_all_tokens=False, return_patch_tokens=False):    
         
-        # RIGHT IMAGE INFERENCE
-        # run encoder; x, mask, ids_restore, prev_feat_maps
-        r_latent, r_mask, r_ids_restore, r_prev_feat_maps = self.generator.encoder(x_right, self.mask_ratio)
-        # run decoder;
-        r_pred, r_rgb_outputs = self.generator.decoder(r_latent, r_ids_restore, r_prev_feat_maps)  # [N, L, p*p*3]
+        def process_input(x, bool_masked_pos, layer_id, return_qkv, split_out_as_qkv, return_all_tokens=False, return_patch_tokens=False):
+            if bool_masked_pos is None:
+                bool_masked_pos = torch.zeros((x.shape[0], self.patch_embed.num_patches), dtype=torch.bool).to(x.device)
+            x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
+            batch_size, seq_len, _ = x.size()
+
+            cls_tokens = self.cls_token.expand(batch_size, -1, -1)
+            mask_token = self.mask_token.expand(batch_size, seq_len, -1)
+
+            w = bool_masked_pos.unsqueeze(-1).type_as(mask_token)
+            x = x * (1 - w) + mask_token * w
+
+            x = torch.cat((cls_tokens, x), dim=1)
+            if self.pos_embed is not None:
+                x = x + self.pos_embed
+            x = self.pos_drop(x)
+
+            rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
+
+            # handling intermediate layers
+            if isinstance(layer_id, list):
+                output_list = []
+                for l, blk in enumerate(self.blocks):
+                    x = blk(x, rel_pos_bias=rel_pos_bias)
+                    if l in layer_id:
+                        output_list.append(x[:, 1:])
+                return output_list
+            elif isinstance(layer_id, int):
+                for l, blk in enumerate(self.blocks):
+                    if l < layer_id:
+                        x = blk(x, rel_pos_bias=rel_pos_bias)
+                    elif l == layer_id:
+                        x = blk.norm1(x)
+                    else:
+                        break
+                x = x[:, 1:]
+            else:
+                raise NotImplementedError(f"Not support for layer id is {layer_id} now!")
+
+            if return_qkv:
+                qkv = None
+                for i, blk in enumerate(self.blocks):
+                    if i < len(self.blocks) - 1:
+                        x = blk(x, rel_pos_bias=rel_pos_bias)
+                    else:
+                        x, qkv = blk(x, rel_pos_bias=rel_pos_bias, return_qkv=True)
+
+                if split_out_as_qkv:
+                    q, k, v = qkv[0], qkv[1], qkv[2]
+                    return x, q, k, v
+                else:
+                    x = self.norm(x)
+                    x = self.lm_head(x[bool_masked_pos])
+
+                return x, qkv
+            elif return_all_tokens or return_patch_tokens:
+                x = x[:, 1:]
+                if return_patch_tokens:
+                    return x
+                return self.lm_head(x)
+            else:
+                x = self.norm(x)
+                return self.lm_head(x[bool_masked_pos])
         
-        return (l_pred, r_pred), (l_mask, r_mask), (l_rgb_outputs, r_rgb_outputs) #predictions, masks, scaled_images
+        # Process each input separately
+        result_left = process_input(x_left, bool_masked_pos, layer_id, return_qkv, split_out_as_qkv, return_all_tokens, return_patch_tokens)
+        result_right = process_input(x_right, bool_masked_pos, layer_id, return_qkv, split_out_as_qkv, return_all_tokens, return_patch_tokens)
+
+        # Return combined results
+        return result_left, result_right
+
+    def forward_get_last_selfattention(self, x_left, x_right):
+        def process_input(x):
+            x = self.patch_embed(x)
+            batch_size, seq_len, _ = x.size()
+            cls_tokens = self.cls_token.expand(batch_size, -1, -1)
+            x = torch.cat((cls_tokens, x), dim=1)
+            if self.pos_embed is not None:
+                x = x + self.pos_embed
+            x = self.pos_drop(x)
+            rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
+
+            for i, blk in enumerate(self.blocks):
+                if i < len(self.blocks) - 1:
+                    x = blk(x, rel_pos_bias=rel_pos_bias)
+                else:
+                    # return attention of the last block
+                    return blk(x, rel_pos_bias=rel_pos_bias, return_attention=True)
+
+        # Process each input separately
+        attention_left = process_input(x_left)
+        attention_right = process_input(x_right)
+
+        # Return combined results
+        return attention_left, attention_right
+
 
     def training_step(self, batch, batch_idx, optimizer_idx):
         x_left, x_right = batch['left_image'], batch['right_image']
@@ -591,11 +771,6 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer_gen, step_size=30, gamma=0.9) #build_scheduler(optimizer, self.config)
         return [optimizer_gen, optimizer_disc], [scheduler]
 
-    # --------------- helper functions ----------------
-    #def on_train_epoch_start(self):
-    #    if self.current_epoch==0:
-    #        sample_input= torch.randn((8,3,10,224,224))
-    #        self.logger.experiment.add_graph(MaskedImageAutoEncoder(self.config),sample_input)
 
     def visualise_sample(self, pred, mask, img):
         y = self.unpatchify(pred)
@@ -651,6 +826,45 @@ class MultiScaleMaskedImageAutoEncoder(BaseModel):
         x = torch.einsum('nhwpqc->nchpwq', x)
         imgs = x.reshape(shape=(x.shape[0], 3,h * ph, w * pw))
         return imgs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ----------------------------- ViT Model for Downstream FineTuning ------------------------------
 @registry.register_model("vit_downstream")

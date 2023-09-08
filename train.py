@@ -2,6 +2,7 @@ from utils import *
 from builder import *
 from fileio import *
 from arguments import args
+from trainers.lightning_trainer import *   
 
 def main():
     setup_imports()
