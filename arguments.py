@@ -27,6 +27,7 @@ class Args:
         self.parser.add_argument('--dataset_config_path', type=str, default='./configs/datasets/stereo_mim.yaml', help='the path to dataset config')
         self.parser.add_argument('--user_config_path', type=str, default='./configs/sample.yaml', help='the path to user config')
         self.parser.add_argument("--tokenizer_model", type=str, default="vqkd_encoder_base_decoder_3x768x12_clip")
+        print("added tokeniser model")
 
         # This is needed to support torch.distributed.launch
         self.parser.add_argument(
