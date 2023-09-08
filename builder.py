@@ -215,7 +215,7 @@ def build_trainer(config, fileio_client, ckpt_path=None):
     print("trainer cls", trainer_cls)
     data_builder = build_datamodule(config)
 
-    print("tokeniser", config.tokenizer_model)
+    print("tokeniser", config.model_config.tokenizer_model)
     tokenizer = get_visual_tokenizer(config)
 
     model = build_model(config, ckpt_path)
@@ -234,9 +234,9 @@ def load_datasets(data_module) -> None:
     return data_module, train_loader, val_loader, test_loader
 
 def get_visual_tokenizer(args):
-    print(f"Creating visual tokenizer: {args.tokenizer_model}")
+    print(f"Creating visual tokenizer: {args.model_config.tokenizer_model}")
     model = get_model(
-            args.tokenizer_model,
+            args.model_config.tokenizer_model,
             pretrained=True,
             pretrained_weight=args.tokenizer_weight,
             as_tokenzer=True,

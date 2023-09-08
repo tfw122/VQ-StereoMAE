@@ -137,9 +137,9 @@ class MaskedImageAutoEncoder(BaseModel):
             print('OG imagenet weights loaded from: {} \n to commence finetuning'.format(self.finetune_imagenet))
 
     def get_visual_tokenizer(args):
-        print(f"Creating visual tokenizer: {args.tokenizer_model}")
+        print(f"Creating visual tokenizer: {args.model_config.tokenizer_model}")
         model = create_model(
-                args.tokenizer_model,
+                args.model_config.tokenizer_model,
                 pretrained=True,
                 pretrained_weight=args.tokenizer_weight,
                 as_tokenzer=True,
