@@ -234,17 +234,7 @@ def load_datasets(data_module) -> None:
     test_loader = data_module.test_dataloader()
     return data_module, train_loader, val_loader, test_loader
 
-def get_visual_tokenizer(args):
-    print(f"Creating visual tokenizer: {args.model_config.tokenizer_model}")
-    model = get_vqkd_model(
-            args.model_config.tokenizer_model,
-            pretrained=True,
-            #pretrained_weight=args.tokenizer_weight,
-            as_tokenzer=True,
-            n_code=args.model_config.codebook_size, 
-            code_dim=args.model_config.codebook_dim,
-        ).eval()
-    return model
+
 
 def build_callbacks(config):
     callbacks= {}
