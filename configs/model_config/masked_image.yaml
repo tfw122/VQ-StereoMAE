@@ -68,3 +68,4 @@ model_config:
   drop_rate: 0.1
   attn_drop_rate: 0.0
   norm_layer: partial
+  init_values: 1e-4
