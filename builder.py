@@ -12,6 +12,8 @@ from utils import *
 from imports.registry import registry
 from omegaconf import DictConfig, OmegaConf, errors as OCErrors
 import fairscale.optim.oss as OSS
+from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaskedImageModellingDatasetModule
+
 logger = logging.getLogger(__name__)
 
 def build_config(args):
