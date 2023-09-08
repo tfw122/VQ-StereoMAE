@@ -47,6 +47,7 @@ model_config:
   
 
   ckpt_monitor: val_loss
+  tokenizer_model : vqkd_encoder_base_decoder_1x768x12_clip
 
   finetune_imagenet: null
   # finetune using imagenet weights, arg= path to the local directory with imagenet weights 

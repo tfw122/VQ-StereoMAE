@@ -27,6 +27,7 @@ def build_config(args):
     dataset_config = load_yaml(args.dataset_config_path)
     user_config = load_yaml(args.user_config_path)
 
+
     config = OmegaConf.merge(default_config, model_config, dataset_config, user_config)
     
     # The above function only merges and overrides the default config; 
