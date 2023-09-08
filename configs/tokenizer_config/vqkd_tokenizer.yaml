@@ -1,4 +1,4 @@
-model_config: 'vq_masked_image'
+tokenizer_config: vqkd_encoder_base_decoder_3x768x12_clip
 
     n_embed: 8192
     embed_dim: 32
