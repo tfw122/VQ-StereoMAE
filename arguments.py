@@ -25,7 +25,7 @@ class Args:
         self.parser.add_argument('--default_config_path', type=str, default='./configs/default.yaml', help='the path to default config')
         self.parser.add_argument('--model_config_path', type=str, default='./configs/models/masked_image.yaml', help='the path to model config')
         self.parser.add_argument('--dataset_config_path', type=str, default='./configs/datasets/stereo_mim.yaml', help='the path to dataset config')
-        self.parser.add_argument('--user_config_path', type=str, default='./configs/user/sample.yaml', help='the path to user config')
+        self.parser.add_argument('--user_config_path', type=str, default='./configs/sample.yaml', help='the path to user config')
 
         # This is needed to support torch.distributed.launch
         self.parser.add_argument(
