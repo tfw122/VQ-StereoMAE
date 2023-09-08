@@ -21,7 +21,7 @@ from datetime import timedelta
 from timm.utils import get_state_dict
 import argparse 
 import torch
-from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaskedImageModellingDatasetModule
+#from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaskedImageModellingDatasetModule
 
 
 logger = logging.getLogger(__name__)

@@ -2,7 +2,9 @@ from utils import *
 from builder import *
 from fileio import *
 from arguments import args
-from trainers.lightning_trainer import *   
+from trainers.lightning_trainer import * 
+from datasets.dataset_zoo.mim.stereo_vision_mim_builder import StereoVisionMaskedImageModellingDatasetModule
+
 
 def main():
     setup_imports()
