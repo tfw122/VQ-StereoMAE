@@ -79,7 +79,7 @@ class MaskedImageAutoEncoder(BaseModel):
             Block(
                 dim=self.model_config.image_encoder.embed_dim, num_heads = self.model_config.image_encoder.num_heads, mlp_ratio=self.model_config.image_encoder.mlp_ratio,
                 drop=self.model_config.drop_rate, attn_drop=self.model_config.attn_drop_rate, drop_path=dpr[i],
-                attn_head_dim=self.model_config.attn_head_dim, act_layer=self.model_config.act_layer
+                act_layer=self.model_config.act_layer
             )
             for i in range(self.model_config.image_encoder.depth)])
         self.norm = self.model_config.norm_layer(self.model_config.image_encoder.embed_dim)
