@@ -460,6 +460,8 @@ class Registry:
 
     @classmethod
     def get_preprocessor_class(cls, name):
+        print(cls)
+        print(name)
         return cls.mapping["processor_name_mapping"].get(name, None)
 
     @classmethod
