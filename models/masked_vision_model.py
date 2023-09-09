@@ -88,8 +88,6 @@ class MaskedImageAutoEncoder(BaseModel):
         #self.init_std = self.model_config.init_std
         #self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
 
-        self.apply(self._init_weights)
-        self.fix_init_weight()
 
         self.finetune_imagenet= self.model_config.finetune_imagenet
         self.num_samples_to_visualise = self.model_config.num_samples_to_visualise
