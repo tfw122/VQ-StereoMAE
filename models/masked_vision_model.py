@@ -76,6 +76,8 @@ class MaskedImageAutoEncoder(BaseModel):
 
         self.rel_pos_bias = None
 
+        
+
         dpr = [x.item() for x in torch.linspace(0, self.model_config.drop_path_rate, self.model_config.image_encoder.depth)]  
         self.blocks = nn.ModuleList([
             Block(
@@ -1148,6 +1150,8 @@ class VITEncoderDownStream(BaseModel):
         np.save('{}/sigmoid_outputs.npy'.format(self.output_dir), np.asarray(outputs_list))
         np.save('{}/claim_ids.npy'.format(self.output_dir), np.asarray(claim_id_list))
 
+
+        
     def configure_optimizers(self):
         """
         Configure and load optimizers here.

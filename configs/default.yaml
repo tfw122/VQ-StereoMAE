@@ -85,7 +85,7 @@ trainer:
         val_check_interval: 1992 #6500 #6000 #12000
         log_every_n_steps: 300 # 300
         enable_checkpointing: True
-        strategy: ddp
+        strategy: ddp_find_unused_parameters_true
         #replace_sampler_ddp: True
         #limit_val_batches: 0.0 # >>> disable validation
         # set to 0 if you want progress bar to be turned off
