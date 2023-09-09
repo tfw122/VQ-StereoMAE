@@ -44,8 +44,9 @@ class MaskedImageAutoEncoder(BaseModel):
         super().__init__()
         print('for this work well, make sure inputs are not normalised!')
         self.config = config
-        self.mask_ratio = self.model_config.mask_ratio
+
         self.model_config = self.config.model_config
+        self.mask_ratio = self.model_config.mask_ratio
         self.dataset_config =  self.config.dataset_config
         self.user_config = self.config.user_config
         self.image_out_dir= '{}/{}/mae_out_test_{}_{}_{}'.format(self.config.user_config.save_root_dir, self.config.user_config.username_prefix, self.dataset_config.dataset_name, self.model_config.loss_type, self.user_config.experiment_name)
