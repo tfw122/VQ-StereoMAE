@@ -44,7 +44,7 @@ class MaskedImageAutoEncoder(BaseModel):
         super().__init__()
         print('for this work well, make sure inputs are not normalised!')
         self.config = config
-        self.mask_ratio = self.config.mask_ratio
+        self.mask_ratio = self.model_config.mask_ratio
         self.model_config = self.config.model_config
         self.dataset_config =  self.config.dataset_config
         self.user_config = self.config.user_config
