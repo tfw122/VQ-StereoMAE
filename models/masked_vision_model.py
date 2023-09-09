@@ -44,6 +44,7 @@ class MaskedImageAutoEncoder(BaseModel):
         super().__init__()
         print('for this work well, make sure inputs are not normalised!')
         self.config = config
+        self.mask_ratio = self.config.mask_ratio
         self.model_config = self.config.model_config
         self.dataset_config =  self.config.dataset_config
         self.user_config = self.config.user_config
@@ -86,7 +87,8 @@ class MaskedImageAutoEncoder(BaseModel):
         #self.init_std = self.model_config.init_std
         #self.lm_head = nn.Linear(self.model_config.image_encoder.embed_dim, self.model_config.vocab_size)   
 
-
+        self.apply(self._init_weights)
+        self.fix_init_weight()
 
         self.finetune_imagenet= self.model_config.finetune_imagenet
         self.num_samples_to_visualise = self.model_config.num_samples_to_visualise
